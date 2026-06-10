@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Hotel Booking — User API",
-        "description": "Customer-facing REST API for mobile/web user UI. Authenticate with Bearer token from login/register.",
+        "description": "Customer-facing REST API for mobile/web user UI. Authenticate with Bearer token from `POST /user/auth/login` or `/user/auth/register`.\n\n## Test / Dummy Credentials (from seeders)\n\n**All accounts use password:** `password123`\n\n### Customer — API login (`POST /user/auth/login`) & web (`/customer/login`)\n| Name | Email |\n|------|-------|\n| Amit Verma | amit@customer.com |\n| Sneha Patel | sneha@customer.com |\n| Rahul Singh | rahul@customer.com |\n| Kavita Nair | kavita@customer.com |\n\n### Staff / Admin — web only (`/staff/login`)\n| Role | Email | After login |\n|------|-------|-------------|\n| Super Admin | superadmin@hotel.com | `/admin/dashboard` |\n| Admin Staff | staff@hotel.com | `/admin/dashboard` |\n\n### Vendor — web only (`/staff/login`)\n| Name | Email | After login |\n|------|-------|-------------|\n| Rajesh Kumar | vendor1@hotel.com | `/vendor/dashboard` |\n| Priya Sharma | vendor2@hotel.com | `/vendor/dashboard` |\n| Anil D'Souza | vendor3@hotel.com | `/vendor/dashboard` |",
         "version": "1.0.0"
     },
     "servers": [
@@ -71,6 +71,7 @@
                     "Auth"
                 ],
                 "summary": "Customer login",
+                "description": "Dummy accounts (password `password123`): amit@customer.com, sneha@customer.com, rahul@customer.com, kavita@customer.com",
                 "operationId": "d1d381d6f4bfc8cb87925200f10817bf",
                 "requestBody": {
                     "required": true,
@@ -84,11 +85,13 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email"
+                                        "format": "email",
+                                        "example": "amit@customer.com"
                                     },
                                     "password": {
                                         "type": "string",
-                                        "format": "password"
+                                        "format": "password",
+                                        "example": "password123"
                                     },
                                     "device_name": {
                                         "type": "string",
@@ -692,7 +695,7 @@
     "tags": [
         {
             "name": "Auth",
-            "description": "Customer registration & login"
+            "description": "Customer registration & login. Test login: amit@customer.com / password123 (see API description for all dummy accounts)."
         },
         {
             "name": "Profile",

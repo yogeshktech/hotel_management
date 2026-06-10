@@ -44,10 +44,15 @@ class AuthController extends ApiController
         ], 'Registration successful', 201);
     }
 
-    #[OA\Post(path: '/user/auth/login', tags: ['Auth'], summary: 'Customer login')]
+    #[OA\Post(
+        path: '/user/auth/login',
+        tags: ['Auth'],
+        summary: 'Customer login',
+        description: 'Dummy accounts (password `password123`): amit@customer.com, sneha@customer.com, rahul@customer.com, kavita@customer.com'
+    )]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(required: ['email', 'password'], properties: [
-        new OA\Property(property: 'email', type: 'string', format: 'email'),
-        new OA\Property(property: 'password', type: 'string', format: 'password'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'amit@customer.com'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
         new OA\Property(property: 'device_name', type: 'string', example: 'mobile-app'),
     ]))]
     #[OA\Response(response: 200, description: 'Login successful')]
