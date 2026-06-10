@@ -32,6 +32,7 @@
                     </form>
                     <hr>
                     <p class="text-center small text-muted mb-0">
+                        <a href="{{ url('/') }}">← Home</a> ·
                         Customer? <a href="{{ route('customer.login') }}">Customer Login</a>
                     </p>
                 </div>

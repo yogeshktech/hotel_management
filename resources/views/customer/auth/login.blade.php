@@ -25,6 +25,7 @@
                     </form>
                     <hr>
                     <p class="text-center small mb-0">
+                        <a href="{{ url('/') }}">← Home</a> ·
                         New customer? <a href="{{ route('customer.register') }}">Register</a> ·
                         Staff? <a href="{{ route('staff.login') }}">Staff Login</a>
                     </p>
