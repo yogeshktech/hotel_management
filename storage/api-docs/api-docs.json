@@ -1,0 +1,730 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Hotel Booking — User API",
+        "description": "Customer-facing REST API for mobile/web user UI. Authenticate with Bearer token from login/register.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v1",
+            "description": "API v1"
+        }
+    ],
+    "paths": {
+        "/user/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register new customer",
+                "operationId": "125c7c1d419d843b818311eddaed12b1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "phone",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Amit Verma"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+919900000001"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Registered successfully"
+                    }
+                }
+            }
+        },
+        "/user/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Customer login",
+                "operationId": "d1d381d6f4bfc8cb87925200f10817bf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "device_name": {
+                                        "type": "string",
+                                        "example": "mobile-app"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    }
+                }
+            }
+        },
+        "/user/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout (revoke current token)",
+                "operationId": "6d8eecb1504d86ba23b75b4b9d0e6a82",
+                "responses": {
+                    "200": {
+                        "description": "Logged out"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get authenticated customer",
+                "operationId": "910e89184c62c5aa3322c6af36d27253",
+                "responses": {
+                    "200": {
+                        "description": "Customer profile"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/banners": {
+            "get": {
+                "tags": [
+                    "Banners"
+                ],
+                "summary": "Active homepage banners",
+                "operationId": "81fd8b388bf2364cda740b680c8ed934",
+                "parameters": [
+                    {
+                        "name": "placement",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "example": "home"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of banners"
+                    }
+                }
+            }
+        },
+        "/user/bookings/calculate-price": {
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Calculate booking price preview",
+                "operationId": "a9be8463734d1891e048749c4c396c5a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "room_id",
+                                    "guest_package",
+                                    "check_in",
+                                    "check_out"
+                                ],
+                                "properties": {
+                                    "room_id": {
+                                        "type": "integer"
+                                    },
+                                    "guest_package": {
+                                        "type": "string",
+                                        "enum": [
+                                            "adult",
+                                            "couple",
+                                            "family",
+                                            "child"
+                                        ]
+                                    },
+                                    "child_count": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "check_in": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "check_out": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "promo_code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Price breakdown"
+                    }
+                }
+            }
+        },
+        "/user/bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "My bookings list",
+                "operationId": "d7ac0d6725950fa0eef0420609a74476",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking list"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Create online booking",
+                "operationId": "9f6dc95546b9db0980d83aae8504fec1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "room_id",
+                                    "guest_package",
+                                    "check_in",
+                                    "check_out"
+                                ],
+                                "properties": {
+                                    "room_id": {
+                                        "type": "integer"
+                                    },
+                                    "guest_package": {
+                                        "type": "string",
+                                        "enum": [
+                                            "adult",
+                                            "couple",
+                                            "family",
+                                            "child"
+                                        ]
+                                    },
+                                    "child_count": {
+                                        "type": "integer"
+                                    },
+                                    "check_in": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "check_out": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "promo_code": {
+                                        "type": "string"
+                                    },
+                                    "guest_notes": {
+                                        "type": "string"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "example": "razorpay"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Booking created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Booking detail & tracking",
+                "operationId": "a497e38d9762a3b67d4ae53ae8b86cae",
+                "responses": {
+                    "200": {
+                        "description": "Booking detail"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/bookings/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Cancel booking",
+                "operationId": "21ef8f6db14c75e38272dd1f3cd0e9ef",
+                "responses": {
+                    "200": {
+                        "description": "Booking cancelled"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/dashboard": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Dashboard stats & recent bookings",
+                "operationId": "e47007ad1031211ea8ee9dee4bf7f1fd",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/locations": {
+            "get": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "List all destinations",
+                "operationId": "ee90329f215e9eb3ef77765e59b9fa43",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of locations"
+                    }
+                }
+            }
+        },
+        "/user/locations/{id}": {
+            "get": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "Get location detail",
+                "operationId": "f25e05e4c64502bcddd1813d5d225e5f",
+                "responses": {
+                    "200": {
+                        "description": "Location detail"
+                    }
+                }
+            }
+        },
+        "/user/profile": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get profile",
+                "operationId": "742aa725edca5b1dd3ab93f4578c3f93",
+                "responses": {
+                    "200": {
+                        "description": "Profile data"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update profile",
+                "operationId": "5cf0571366a2081ef434bb18e6e15623",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/promo-codes/validate": {
+            "post": {
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Validate promo code",
+                "operationId": "2f92dd53caf5cb529f6939bb725a09d9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "SUMMER20"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "example": 5000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Promo validation result"
+                    }
+                }
+            }
+        },
+        "/user/properties": {
+            "get": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Search active properties",
+                "operationId": "ff7c25df4c745b4d7ce44b303ccd084d",
+                "parameters": [
+                    {
+                        "name": "location_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated properties"
+                    }
+                }
+            }
+        },
+        "/user/properties/{id}": {
+            "get": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Property detail with rooms & pricing",
+                "operationId": "906e561dfccc85a25628c510dda31213",
+                "responses": {
+                    "200": {
+                        "description": "Property detail"
+                    }
+                }
+            }
+        },
+        "/user/properties/{id}/rooms": {
+            "get": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "List rooms with package pricing",
+                "operationId": "97b2afe717c5eeb7acc4593d45c4694d",
+                "responses": {
+                    "200": {
+                        "description": "Room list with pricing"
+                    }
+                }
+            }
+        },
+        "/user/reviews": {
+            "get": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "My reviews",
+                "operationId": "d7486984e9b706f18c80928e4b8fed3b",
+                "responses": {
+                    "200": {
+                        "description": "Review list"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/user/bookings/{id}/review": {
+            "post": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Submit review after checkout",
+                "operationId": "01f700fce72176c896443d76475fd171",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "service_rating",
+                                    "food_rating",
+                                    "overall_rating"
+                                ],
+                                "properties": {
+                                    "service_rating": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "food_rating": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "overall_rating": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "comment": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Review created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Use token from POST /user/auth/login or /user/auth/register",
+                "bearerFormat": "Sanctum Token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Customer registration & login"
+        },
+        {
+            "name": "Profile",
+            "description": "Customer profile"
+        },
+        {
+            "name": "Dashboard",
+            "description": "Customer dashboard stats"
+        },
+        {
+            "name": "Locations",
+            "description": "Browse destinations"
+        },
+        {
+            "name": "Properties",
+            "description": "Hotels & resorts"
+        },
+        {
+            "name": "Bookings",
+            "description": "Online booking & tracking"
+        },
+        {
+            "name": "Reviews",
+            "description": "Post-stay reviews"
+        },
+        {
+            "name": "Promo",
+            "description": "Promo code validation"
+        },
+        {
+            "name": "Banners",
+            "description": "Homepage banners"
+        }
+    ]
+}
