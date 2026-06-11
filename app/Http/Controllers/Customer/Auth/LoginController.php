@@ -31,6 +31,10 @@ class LoginController extends Controller
     {
         $user->update(['last_login_at' => now()]);
 
+        if ($request->filled('redirect') && str_starts_with($request->redirect, url('/'))) {
+            return redirect($request->redirect);
+        }
+
         return redirect()->intended(route('customer.dashboard'));
     }
 

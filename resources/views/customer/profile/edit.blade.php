@@ -1,13 +1,12 @@
-@extends('layouts.customer')
+@extends('layouts.site')
 
 @section('title', 'My Profile')
 
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header fw-semibold">Edit Profile</div>
-            <div class="card-body">
+        <div class="site-card p-4">
+            <h1 class="h5 fw-bold mb-3">Edit Profile</h1>
                 <form action="{{ route('customer.profile.update') }}" method="post">
                     @csrf @method('PUT')
                     <div class="row g-3">
@@ -40,9 +39,9 @@
                             <input type="password" name="password_confirmation" class="form-control">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Save Profile</button>
+                    <button type="submit" class="btn btn-site-gold mt-3">Save Profile</button>
+                    <a href="{{ route('customer.dashboard') }}" class="btn btn-site-outline mt-3 ms-2">Back</a>
                 </form>
-            </div>
         </div>
     </div>
 </div>

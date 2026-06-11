@@ -29,7 +29,7 @@ class RoleController extends Controller
 
         $role = Role::create([
             'name' => $validated['name'],
-            'guard_name' => 'web',
+            'guard_name' => 'staff',
         ]);
 
         $role->syncPermissions($validated['permissions'] ?? []);

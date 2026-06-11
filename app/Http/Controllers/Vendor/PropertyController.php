@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Vendor;
 use App\Models\Homestay;
 use App\Models\Location;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PropertyController extends VendorController
@@ -102,5 +103,34 @@ class PropertyController extends VendorController
 
         return redirect()->route('vendor.properties.show', $property)
             ->with('success', 'Property updated successfully.');
+    }
+
+    public function destroy(Homestay $property)
+    {
+        $this->ensureOwnProperty($property);
+        $property->load(['images', 'rooms.images']);
+
+        if ($property->bookings()->blocking()->exists()) {
+            return back()->with('error', 'Cannot delete property with active bookings.');
+        }
+
+        foreach ($property->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
+        $property->images()->delete();
+
+        foreach ($property->rooms as $room) {
+            foreach ($room->images as $image) {
+                Storage::disk('public')->delete($image->path);
+            }
+            $room->images()->delete();
+            $room->pricings()->delete();
+            $room->delete();
+        }
+
+        $property->delete();
+
+        return redirect()->route('vendor.properties.index')
+            ->with('success', 'Property deleted successfully.');
     }
 }

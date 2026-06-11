@@ -111,4 +111,9 @@ class Booking extends Model
     {
         return $query->whereNotIn('status', ['cancelled', 'rejected']);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'booking_reference';
+    }
 }

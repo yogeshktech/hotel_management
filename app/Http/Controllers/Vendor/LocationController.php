@@ -55,4 +55,16 @@ class LocationController extends VendorController
         return redirect()->route('vendor.locations.index')
             ->with('success', 'Location created successfully.');
     }
+
+    public function destroy(Location $location)
+    {
+        if ($location->homestays()->exists()) {
+            return back()->with('error', 'Cannot delete location linked to properties.');
+        }
+
+        $location->delete();
+
+        return redirect()->route('vendor.locations.index')
+            ->with('success', 'Location deleted successfully.');
+    }
 }

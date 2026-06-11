@@ -31,7 +31,9 @@
                                 @else
                                     <form action="{{ route('vendor.rooms.images.primary', [$property, $room, $image]) }}" method="POST" class="d-inline">@csrf<button class="btn btn-sm btn-outline-primary">Set Primary</button></form>
                                 @endif
+                                @can('properties.delete')
                                 <form action="{{ route('vendor.rooms.images.destroy', [$property, $room, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger">Delete</button></form>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -55,9 +57,15 @@
                         <input type="checkbox" name="refresh_pricing" value="1" class="form-check-input" id="refresh_pricing">
                         <label class="form-check-label" for="refresh_pricing">Recalculate package pricing from base price</label>
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-3 d-flex flex-wrap gap-2">
                         <button type="submit" class="btn btn-primary">Update Room</button>
                         <a href="{{ route('vendor.properties.show', $property) }}" class="btn btn-outline-secondary">Back</a>
+                        @can('properties.delete')
+                        <form action="{{ route('vendor.rooms.destroy', [$property, $room]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this room permanently?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger">Delete Room</button>
+                        </form>
+                        @endcan
                     </div>
                 </form>
             </div>

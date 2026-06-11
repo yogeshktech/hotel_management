@@ -48,7 +48,7 @@ class PropertyController extends ApiController
             return $this->error('Property not available', 404);
         }
 
-        $property->load(['location', 'images', 'rooms.pricings']);
+        $property->load(['location', 'images', 'rooms.pricings', 'rooms.images']);
         $property->loadAvg('reviews', 'overall_rating');
         $property->increment('view_count');
 
@@ -63,7 +63,7 @@ class PropertyController extends ApiController
             return $this->error('Property not available', 404);
         }
 
-        $rooms = $property->rooms()->with('pricings')->where('status', 'active')->get();
+        $rooms = $property->rooms()->with(['pricings', 'images'])->where('status', 'active')->get();
 
         return $this->success(RoomResource::collection($rooms));
     }

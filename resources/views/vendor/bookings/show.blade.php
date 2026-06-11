@@ -50,12 +50,20 @@
                 @if($booking->status === 'checked_in')
                     <form action="{{ route('vendor.bookings.check-out', $booking) }}" method="POST">@csrf<button class="btn btn-primary w-100">Check Out Guest</button></form>
                 @endif
+                @can('bookings.delete')
                 @if(!in_array($booking->status, ['checked_out', 'cancelled']))
                     <form action="{{ route('vendor.bookings.cancel', $booking) }}" method="POST" onsubmit="return confirm('Cancel booking and release dates for online booking?')">
                         @csrf
                         <button class="btn btn-outline-danger w-100">Cancel Booking</button>
                     </form>
                 @endif
+                @if($booking->status !== 'checked_in')
+                    <form action="{{ route('vendor.bookings.destroy', $booking) }}" method="POST" onsubmit="return confirm('Permanently delete this booking record?')">
+                        @csrf @method('DELETE')
+                        <button class="btn btn-outline-danger w-100">Delete Booking</button>
+                    </form>
+                @endif
+                @endcan
             </div>
         </div>
 

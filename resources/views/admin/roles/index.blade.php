@@ -34,12 +34,14 @@
                             <td>
                                 @if($role->name !== 'super_admin')
                                     <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    @can('roles.delete')
                                     @if(!in_array($role->name, ['vendor', 'customer']))
                                     <form action="{{ route('admin.roles.destroy', $role) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this role?')">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger">Delete</button>
                                     </form>
                                     @endif
+                                    @endcan
                                 @else
                                     <span class="text-muted small">Protected</span>
                                 @endif

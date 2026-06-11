@@ -63,4 +63,16 @@ class Homestay extends Model
     {
         return $query->where('status', 'active');
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    public function primaryImageUrl(): ?string
+    {
+        $img = $this->images->firstWhere('is_primary', true) ?? $this->images->first();
+
+        return $img?->url;
+    }
 }

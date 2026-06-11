@@ -37,6 +37,14 @@
                     <td class="text-nowrap">
                         @can('users.edit')<a href="{{ route('admin.staff.edit', $member) }}" class="btn btn-sm btn-outline-primary">Edit</a>@endcan
                         <form action="{{ route('admin.staff.toggleActive', $member) }}" method="post" class="d-inline">@csrf<button class="btn btn-sm btn-outline-warning">Toggle</button></form>
+                        @can('users.delete')
+                            @if(!$member->hasRole('super_admin') && $member->id !== auth('staff')->id())
+                            <form action="{{ route('admin.staff.destroy', $member) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this staff member?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                            @endif
+                        @endcan
                     </td>
                 </tr>
                 @endforeach

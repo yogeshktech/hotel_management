@@ -1,0 +1,179 @@
+@import url('https://fonts.bunny.net/css?family=playfair-display:500,600,700|plus-jakarta-sans:400,500,600,700');
+
+:root {
+    --site-gold: #c9a227;
+    --site-gold-light: #e8d48b;
+    --site-teal: #0d4f4f;
+    --site-teal-dark: #083434;
+    --site-cream: #faf8f5;
+    --site-charcoal: #1a1a1a;
+    --site-muted: #6b7280;
+    --site-radius: 1rem;
+    --site-shadow: 0 8px 30px rgba(13, 79, 79, 0.08);
+    --site-shadow-lg: 0 20px 50px rgba(13, 79, 79, 0.14);
+}
+
+.site-body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: var(--site-cream);
+    color: var(--site-charcoal);
+}
+
+.site-serif { font-family: 'Playfair Display', Georgia, serif; }
+
+.site-nav {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(13, 79, 79, 0.08);
+    transition: box-shadow 0.2s;
+    &.scrolled { box-shadow: var(--site-shadow); }
+}
+
+.site-brand-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--site-teal), var(--site-teal-dark));
+    border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+}
+
+.btn-site-primary {
+    background: linear-gradient(135deg, var(--site-teal), var(--site-teal-dark));
+    border: none; color: #fff; font-weight: 600;
+    padding: 0.7rem 1.5rem; border-radius: 0.65rem;
+    &:hover { background: var(--site-teal-dark); color: #fff; transform: translateY(-1px); }
+}
+
+.btn-site-gold {
+    background: linear-gradient(135deg, var(--site-gold), #a8861f);
+    border: none; color: #fff; font-weight: 600;
+    padding: 0.7rem 1.5rem; border-radius: 0.65rem;
+    &:hover { color: #fff; filter: brightness(1.05); }
+}
+
+.btn-site-outline {
+    color: var(--site-teal); border: 2px solid var(--site-teal);
+    font-weight: 600; border-radius: 0.65rem;
+    &:hover { background: var(--site-teal); color: #fff; }
+}
+
+.site-hero {
+    position: relative; min-height: 520px;
+    background: linear-gradient(135deg, var(--site-teal-dark) 0%, var(--site-teal) 50%, #0f5f5f 100%);
+    color: #fff; overflow: hidden;
+    &::before {
+        content: ''; position: absolute; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+}
+
+.site-hero-bg {
+    position: absolute; inset: 0; object-fit: cover; width: 100%; height: 100%; opacity: 0.35;
+}
+
+.site-search-box {
+    background: #fff; border-radius: 1.25rem;
+    box-shadow: var(--site-shadow-lg); padding: 1.25rem;
+}
+
+.site-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 600; color: var(--site-teal-dark);
+}
+
+.site-card {
+    background: #fff; border-radius: var(--site-radius);
+    border: 1px solid rgba(13, 79, 79, 0.06);
+    box-shadow: var(--site-shadow);
+    overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
+    height: 100%;
+    &:hover { transform: translateY(-4px); box-shadow: var(--site-shadow-lg); }
+}
+
+.site-card-img {
+    height: 220px; object-fit: cover; width: 100%;
+}
+
+.site-card-img-sm { height: 160px; }
+
+.site-price {
+    color: var(--site-teal); font-weight: 700; font-size: 1.15rem;
+    small { font-size: 0.75rem; font-weight: 500; color: var(--site-muted); }
+}
+
+.site-rating {
+    background: var(--site-gold); color: #fff;
+    padding: 0.2rem 0.5rem; border-radius: 0.4rem;
+    font-size: 0.8rem; font-weight: 600;
+}
+
+.site-badge {
+    background: rgba(201, 162, 39, 0.15); color: #8b6914;
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 0.3rem 0.65rem; border-radius: 999px;
+}
+
+.site-dest-card {
+    position: relative; border-radius: var(--site-radius); overflow: hidden;
+    min-height: 200px; display: block; text-decoration: none; color: #fff;
+    &::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 60%);
+    }
+    img { width: 100%; height: 200px; object-fit: cover; transition: transform 0.4s; }
+    &:hover img { transform: scale(1.05); }
+    .dest-label {
+        position: absolute; bottom: 1rem; left: 1rem; z-index: 1;
+        h3 { font-family: 'Playfair Display', serif; margin: 0; font-size: 1.25rem; }
+        span { font-size: 0.85rem; opacity: 0.9; }
+    }
+}
+
+.site-feature-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(13,79,79,.1), rgba(201,162,39,.15));
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+}
+
+.site-footer {
+    background: var(--site-teal-dark); color: rgba(255,255,255,.8);
+    a { color: rgba(255,255,255,.85); text-decoration: none; &:hover { color: var(--site-gold-light); } }
+}
+
+.site-gallery-main {
+    height: 420px; object-fit: cover; width: 100%; border-radius: var(--site-radius);
+}
+
+.site-gallery-thumb {
+    height: 90px; object-fit: cover; width: 100%; border-radius: 0.5rem;
+    cursor: pointer; opacity: 0.7; transition: opacity 0.2s;
+    &.active, &:hover { opacity: 1; outline: 2px solid var(--site-gold); }
+}
+
+.site-booking-panel {
+    position: sticky; top: 90px;
+    background: #fff; border-radius: var(--site-radius);
+    border: 1px solid rgba(13, 79, 79, 0.1);
+    box-shadow: var(--site-shadow-lg); padding: 1.5rem;
+}
+
+.site-amenity {
+    background: var(--site-cream); border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem; font-size: 0.85rem;
+}
+
+.site-room-card {
+    border: 2px solid transparent; border-radius: var(--site-radius);
+    padding: 1rem; cursor: pointer; transition: border-color 0.2s;
+    &.selected { border-color: var(--site-gold); background: rgba(201,162,39,.05); }
+}
+
+.site-filter-bar {
+    background: #fff; border-radius: var(--site-radius);
+    padding: 1rem; box-shadow: var(--site-shadow);
+}
+
+.site-status-badge {
+    font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 999px;
+}

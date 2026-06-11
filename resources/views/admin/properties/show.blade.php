@@ -126,7 +126,14 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.properties.index') }}" class="btn btn-secondary w-100 mt-3">← Back to Properties</a>
+        @can('properties.delete')
+        <form action="{{ route('admin.properties.destroy', $property) }}" method="post" class="mt-3" onsubmit="return confirm('Permanently delete this property and all rooms?')">
+            @csrf @method('DELETE')
+            <button class="btn btn-outline-danger w-100">Delete Property</button>
+        </form>
+        @endcan
+
+        <a href="{{ route('admin.properties.index') }}" class="btn btn-secondary w-100 mt-2">← Back to Properties</a>
     </div>
 </div>
 @endsection

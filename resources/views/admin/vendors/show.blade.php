@@ -164,7 +164,14 @@
         </div>
         @endif
 
-        <a href="{{ route('admin.vendors.index') }}" class="btn btn-secondary w-100 mt-3">← Back to Vendors</a>
+        @can('vendors.delete')
+        <form action="{{ route('admin.vendors.destroy', $vendor) }}" method="post" class="mt-3" onsubmit="return confirm('Permanently delete this vendor account?')">
+            @csrf @method('DELETE')
+            <button class="btn btn-outline-danger w-100">Delete Vendor</button>
+        </form>
+        @endcan
+
+        <a href="{{ route('admin.vendors.index') }}" class="btn btn-secondary w-100 mt-2">← Back to Vendors</a>
     </div>
 </div>
 @endsection

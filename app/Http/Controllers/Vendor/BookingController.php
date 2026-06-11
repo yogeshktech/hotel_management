@@ -130,6 +130,24 @@ class BookingController extends VendorController
         return back()->with('success', 'Booking cancelled. Dates are open for online booking again.');
     }
 
+    public function destroy(Booking $booking)
+    {
+        $this->ensureOwnBooking($booking);
+
+        if ($booking->status === 'checked_in') {
+            return back()->with('error', 'Check out the guest before deleting this booking.');
+        }
+
+        if (! in_array($booking->status, ['checked_out', 'cancelled'])) {
+            $booking->update(['status' => 'cancelled']);
+        }
+
+        $booking->delete();
+
+        return redirect()->route('vendor.bookings.index')
+            ->with('success', 'Booking deleted. Dates are open for online booking again.');
+    }
+
     private function ensureOwnBooking(Booking $booking): void
     {
         if ($booking->homestay->staff_id !== $this->staff()->id) {

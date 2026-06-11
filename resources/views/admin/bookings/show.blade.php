@@ -44,6 +44,14 @@
         @if($booking->status === 'checked_in')
         <form action="{{ route('admin.bookings.check-out', $booking) }}" method="post">@csrf<button class="btn btn-warning w-100">Check Out Guest</button></form>
         @endif
+        @can('bookings.delete')
+        @if($booking->status !== 'checked_in')
+        <form action="{{ route('admin.bookings.destroy', $booking) }}" method="post" class="mt-2" onsubmit="return confirm('Delete this booking and release dates?')">
+            @csrf @method('DELETE')
+            <button class="btn btn-outline-danger w-100">Delete Booking</button>
+        </form>
+        @endif
+        @endcan
         <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary w-100 mt-2">← Back</a>
     </div></div>
     <div class="card-panel"><div class="card-body text-center">

@@ -1,41 +1,42 @@
-@extends('layouts.app')
+@extends('layouts.site')
+
+@section('title', 'Create Account')
 
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white"><h5 class="mb-0">Customer Registration</h5></div>
-                <div class="card-body">
-                    <form method="POST" action="{{ route('customer.register') }}">
-                        @csrf
-                        <div class="mb-3">
-                            <label class="form-label">Full Name *</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
-                            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Mobile Number *</label>
-                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+91XXXXXXXXXX" required>
-                            @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email *</label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
-                            @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password *</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password *</label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Create Account</button>
-                    </form>
-                    <p class="text-center small mt-3 mb-0">Already registered? <a href="{{ route('customer.login') }}">Login</a></p>
-                </div>
+            <div class="site-card p-4 p-md-5">
+                <h1 class="site-section-title h4 text-center mb-1">Join us</h1>
+                <p class="text-muted text-center small mb-4">Create an account to book premium stays</p>
+                <form method="POST" action="{{ route('customer.register') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Full Name *</label>
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
+                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mobile *</label>
+                        <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+919900000001" required>
+                        @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email *</label>
+                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
+                        @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password *</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Confirm Password *</label>
+                        <input type="password" name="password_confirmation" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-site-gold w-100 mb-3">Create Account</button>
+                    <p class="text-center small mb-0">Already registered? <a href="{{ route('customer.login') }}">Sign in</a></p>
+                </form>
             </div>
         </div>
     </div>

@@ -6,6 +6,7 @@ use App\Models\Homestay;
 use App\Models\Room;
 use App\Models\RoomPricing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RoomController extends VendorController
 {
@@ -84,10 +85,14 @@ class RoomController extends VendorController
         $this->ensureOwnProperty($property);
         abort_if($room->homestay_id !== $property->id, 404);
 
-        if ($room->bookings()->exists()) {
-            return back()->with('error', 'Cannot delete room with existing bookings.');
+        if ($room->bookings()->blocking()->exists()) {
+            return back()->with('error', 'Cannot delete room with active bookings.');
         }
 
+        foreach ($room->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
+        $room->images()->delete();
         $room->pricings()->delete();
         $room->delete();
 

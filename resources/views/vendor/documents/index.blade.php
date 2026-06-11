@@ -59,10 +59,12 @@
                                 <td>{{ $doc?->created_at?->format('d M Y') ?? '—' }}</td>
                                 <td>
                                     @if($doc)
+                                        @can('documents.delete')
                                         <form action="{{ route('vendor.documents.destroy', $doc) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this document?')">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-sm btn-outline-danger">Remove</button>
                                         </form>
+                                        @endcan
                                     @endif
                                 </td>
                             </tr>

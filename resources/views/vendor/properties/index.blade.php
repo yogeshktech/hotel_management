@@ -34,9 +34,15 @@
                         <td>{{ $property->rooms->count() }}</td>
                         <td>₹{{ number_format($property->price_per_night, 0) }}</td>
                         <td><span class="badge {{ $property->status === 'active' ? 'text-bg-success' : ($property->status === 'pending' ? 'text-bg-warning' : 'text-bg-secondary') }}">{{ ucfirst($property->status) }}</span></td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             <a href="{{ route('vendor.properties.show', $property) }}" class="btn btn-sm btn-outline-primary">Manage</a>
                             <a href="{{ route('vendor.properties.edit', $property) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            @can('properties.delete')
+                            <form action="{{ route('vendor.properties.destroy', $property) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this property and all rooms?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                            @endcan
                         </td>
                     </tr>
                 @empty

@@ -21,6 +21,12 @@ class RoomResource extends JsonResource
             'amenities' => $this->amenities,
             'status' => $this->status,
             'pricings' => RoomPricingResource::collection($this->whenLoaded('pricings')),
+            'images' => $this->whenLoaded('images', fn () => $this->images->map(fn ($img) => [
+                'id' => $img->id,
+                'url' => $img->url,
+                'is_primary' => $img->is_primary,
+            ])),
+            'primary_image' => $this->whenLoaded('images', fn () => ($this->images->firstWhere('is_primary', true) ?? $this->images->first())?->url),
         ];
     }
 }

@@ -93,4 +93,17 @@ class BookingController extends Controller
         return redirect()->route('admin.bookings.index')
             ->with('success', 'Offline booking created. Dates blocked for online booking.');
     }
+
+    public function destroy(Booking $booking)
+    {
+        if (in_array($booking->status, ['checked_in'])) {
+            return back()->with('error', 'Check out the guest before deleting this booking.');
+        }
+
+        $booking->update(['status' => 'cancelled']);
+        $booking->delete();
+
+        return redirect()->route('admin.bookings.index')
+            ->with('success', 'Booking deleted. Dates are open for online booking again.');
+    }
 }

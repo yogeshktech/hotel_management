@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\VendorProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class VendorController extends Controller
 {
@@ -72,5 +73,23 @@ class VendorController extends Controller
         $vendor->staff->update(['is_active' => false]);
 
         return redirect()->back()->with('success', 'Vendor suspended.');
+    }
+
+    public function destroy(VendorProfile $vendor)
+    {
+        if ($vendor->staff->homestays()->exists()) {
+            return back()->with('error', 'Delete all vendor properties before removing this account.');
+        }
+
+        foreach ($vendor->documents as $document) {
+            Storage::disk('public')->delete($document->file_path);
+        }
+
+        $staff = $vendor->staff;
+        $vendor->delete();
+        $staff->delete();
+
+        return redirect()->route('admin.vendors.index')
+            ->with('success', 'Vendor account deleted.');
     }
 }

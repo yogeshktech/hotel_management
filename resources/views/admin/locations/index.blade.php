@@ -30,10 +30,12 @@
                     <td>{{ $location->homestays_count ?? $location->homestays()->count() }}</td>
                     <td>
                         <a href="{{ route('admin.locations.edit', $location) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <form action="{{ route('admin.locations.destroy', $location) }}" method="post" class="d-inline" onsubmit="return confirm('Delete?')">
+                        @can('locations.delete')
+                        <form action="{{ route('admin.locations.destroy', $location) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this location?')">
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-outline-danger">Delete</button>
                         </form>
+                        @endcan
                     </td>
                 </tr>
                 @endforeach

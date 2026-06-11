@@ -20,4 +20,14 @@ class Location extends Model
     {
         return $this->hasMany(Homestay::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    public function activeHomestays()
+    {
+        return $this->homestays()->active();
+    }
 }

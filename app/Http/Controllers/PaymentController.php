@@ -2,22 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
+use Exception;
 use Illuminate\Http\Request;
 use Razorpay\Api\Api;
-use App\Models\Booking;
-use App\Notifications\BookingConfirmed;
-use Illuminate\Support\Facades\Notification;    
-use Exception;
 
 class PaymentController extends Controller
 {
-    public function create($bookingId)
+    public function create(Booking $booking)
     {
-        $booking = Booking::findOrFail($bookingId);
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        if ($booking->customer_id !== auth('customer')->id()) {
+            abort(403);
+        }
+
+        if ($booking->payment_status === 'paid') {
+            return redirect()->route('bookings.show', $booking)
+                ->with('info', 'This booking is already paid.');
+        }
+
+        $api = new Api(config('services.razorpay.key', env('RAZORPAY_KEY')), config('services.razorpay.secret', env('RAZORPAY_SECRET')));
         $order = $api->order->create([
-            'receipt' => 'booking_' . $booking->id,
-            'amount' => $booking->total_price * 100,  // In paise
+            'receipt' => $booking->booking_reference,
+            'amount' => (int) round($booking->total_price * 100),
             'currency' => 'INR',
         ]);
 
@@ -26,27 +32,37 @@ class PaymentController extends Controller
 
     public function success(Request $request)
     {
-        // Verify payment
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $request->validate([
+            'razorpay_payment_id' => 'required|string',
+            'razorpay_order_id' => 'required|string',
+            'razorpay_signature' => 'required|string',
+            'booking_id' => 'required|exists:bookings,id',
+        ]);
+
+        $api = new Api(config('services.razorpay.key', env('RAZORPAY_KEY')), config('services.razorpay.secret', env('RAZORPAY_SECRET')));
+
         try {
-            $attributes = [
+            $api->utility->verifyPaymentSignature([
                 'razorpay_order_id' => $request->razorpay_order_id,
                 'razorpay_payment_id' => $request->razorpay_payment_id,
                 'razorpay_signature' => $request->razorpay_signature,
-            ];
-            $api->utility->verifyPaymentSignature($attributes);
+            ]);
         } catch (Exception $e) {
-            // Handle failure
-            return redirect()->route('bookings.create')->with('error', 'Payment failed');
+            return redirect()->route('customer.dashboard')->with('error', 'Payment verification failed.');
         }
 
-        // Update booking status
-        $booking = Booking::where('id', $request->booking_id)->first();  // Assume passed
-        $booking->update(['status' => 'confirmed']);
+        $booking = Booking::findOrFail($request->booking_id);
 
-        // Send notifications
-        $this->sendNotifications($booking);
+        if ($booking->customer_id !== auth('customer')->id()) {
+            abort(403);
+        }
 
-        return view('thank-you');
+        $booking->update([
+            'status' => 'confirmed',
+            'payment_status' => 'paid',
+            'payment_method' => 'razorpay',
+        ]);
+
+        return view('thank-you', compact('booking'));
     }
 }

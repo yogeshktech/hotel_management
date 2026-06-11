@@ -80,7 +80,12 @@ class LocationController extends Controller
 
     public function destroy(Location $location)
     {
+        if ($location->homestays()->exists()) {
+            return back()->with('error', 'Cannot delete location linked to properties.');
+        }
+
         $location->delete();
+
         return redirect()->route('admin.locations.index')
             ->with('success', 'Location deleted successfully.');
     }

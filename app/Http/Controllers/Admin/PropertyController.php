@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Homestay;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PropertyController extends Controller
 {
@@ -51,5 +52,33 @@ class PropertyController extends Controller
         $property->update(['status' => 'rejected']);
 
         return redirect()->back()->with('success', 'Property rejected.');
+    }
+
+    public function destroy(Homestay $property)
+    {
+        $property->load(['images', 'rooms.images']);
+
+        if ($property->bookings()->blocking()->exists()) {
+            return back()->with('error', 'Cannot delete property with active bookings.');
+        }
+
+        foreach ($property->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
+        $property->images()->delete();
+
+        foreach ($property->rooms as $room) {
+            foreach ($room->images as $image) {
+                Storage::disk('public')->delete($image->path);
+            }
+            $room->images()->delete();
+            $room->pricings()->delete();
+            $room->delete();
+        }
+
+        $property->delete();
+
+        return redirect()->route('admin.properties.index')
+            ->with('success', 'Property deleted successfully.');
     }
 }

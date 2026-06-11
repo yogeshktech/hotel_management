@@ -9,9 +9,15 @@
         <span class="badge {{ $property->status === 'active' ? 'text-bg-success' : 'text-bg-warning' }}">{{ ucfirst($property->status) }}</span>
         <span class="text-muted ms-2">{{ $property->location->name ?? '' }} · {{ $property->address }}</span>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap">
         <a href="{{ route('vendor.properties.edit', $property) }}" class="btn btn-sm btn-outline-secondary">Edit Property</a>
         <a href="{{ route('vendor.rooms.create', $property) }}" class="btn btn-sm btn-primary">+ Add Room</a>
+        @can('properties.delete')
+        <form action="{{ route('vendor.properties.destroy', $property) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this property and all rooms?')">
+            @csrf @method('DELETE')
+            <button class="btn btn-sm btn-outline-danger">Delete Property</button>
+        </form>
+        @endcan
     </div>
 </div>
 
@@ -42,7 +48,9 @@
                                 @else
                                     <form action="{{ route('vendor.properties.images.primary', [$property, $image]) }}" method="POST" class="d-inline">@csrf<button class="btn btn-sm btn-outline-primary">Set Primary</button></form>
                                 @endif
+                                @can('properties.delete')
                                 <form action="{{ route('vendor.properties.images.destroy', [$property, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger">Delete</button></form>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -78,8 +86,14 @@
                         <td>{{ $room->total_units }}</td>
                         <td>₹{{ number_format($room->price_per_night, 0) }}</td>
                         <td><span class="badge text-bg-secondary">{{ $room->status }}</span></td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             <a href="{{ route('vendor.rooms.edit', [$property, $room]) }}" class="btn btn-sm btn-outline-primary">Edit & Photos</a>
+                            @can('properties.delete')
+                            <form action="{{ route('vendor.rooms.destroy', [$property, $room]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this room?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                            @endcan
                         </td>
                     </tr>
                 @empty
