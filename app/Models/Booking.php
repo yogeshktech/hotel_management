@@ -106,4 +106,9 @@ class Booking extends Model
     {
         return $query->where('booking_channel', 'offline');
     }
+
+    public function scopeBlocking($query)
+    {
+        return $query->whereNotIn('status', ['cancelled', 'rejected']);
+    }
 }

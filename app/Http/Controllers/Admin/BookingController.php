@@ -7,8 +7,7 @@ use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Homestay;
 use App\Models\Room;
-use App\Services\BookingPricingService;
-use Carbon\Carbon;
+use App\Services\OfflineBookingService;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -72,7 +71,7 @@ class BookingController extends Controller
         return view('admin.bookings.create-offline', compact('properties', 'customers'));
     }
 
-    public function storeOffline(Request $request, BookingPricingService $pricingService)
+    public function storeOffline(Request $request, OfflineBookingService $offlineBookingService)
     {
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
@@ -85,42 +84,13 @@ class BookingController extends Controller
             'guest_notes' => 'nullable|string',
         ]);
 
-        $room = Room::with('homestay')->findOrFail($validated['room_id']);
-        $childCount = (int) ($validated['child_count'] ?? 0);
+        try {
+            $offlineBookingService->create($validated, auth('staff')->id());
+        } catch (\InvalidArgumentException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
 
-        $pricing = $pricingService->calculate(
-            $room,
-            $validated['guest_package'],
-            $childCount,
-            Carbon::parse($validated['check_in']),
-            Carbon::parse($validated['check_out'])
-        );
-
-        Booking::create([
-            'homestay_id' => $room->homestay_id,
-            'customer_id' => $validated['customer_id'],
-            'room_id' => $room->id,
-            'booking_channel' => 'offline',
-            'guest_package' => $validated['guest_package'],
-            'adults_count' => $pricing['adults_count'],
-            'children_count' => $pricing['children_count'],
-            'guests' => $pricing['adults_count'] + $pricing['children_count'],
-            'check_in' => $validated['check_in'],
-            'check_out' => $validated['check_out'],
-            'base_price' => $pricing['base_price'],
-            'cleaning_fee' => $pricing['cleaning_fee'],
-            'service_fee' => $pricing['service_fee'],
-            'total_price' => $pricing['total_price'],
-            'currency' => 'INR',
-            'payment_method' => $validated['payment_method'] ?? 'cash',
-            'payment_status' => 'paid',
-            'status' => 'confirmed',
-            'guest_notes' => $validated['guest_notes'] ?? null,
-            'booked_at' => now(),
-            'vacant_from' => $validated['check_out'],
-            'created_by_staff_id' => auth('staff')->id(),
-        ]);
-
-        return redirect()->route('admin.bookings.index')->with('success', 'Offline booking created.');
+        return redirect()->route('admin.bookings.index')
+            ->with('success', 'Offline booking created. Dates blocked for online booking.');
     }
 }

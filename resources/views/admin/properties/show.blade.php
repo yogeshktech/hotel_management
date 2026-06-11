@@ -6,21 +6,25 @@
 @section('content')
 <div class="row g-3">
     <div class="col-lg-8">
-        @if($property->images->count())
         <div class="card-panel mb-3">
-            <div class="card-header">Images ({{ $property->images->count() }})</div>
+            <div class="card-header">Property Gallery ({{ $property->images->count() }})</div>
             <div class="card-body">
-                <div class="row g-2">
-                    @foreach($property->images as $image)
-                    <div class="col-md-4">
-                        <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border" alt="{{ $image->caption }}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
-                        @if($image->is_primary)<span class="badge bg-primary mt-1">Primary</span>@endif
+                @if($property->images->count())
+                    <div class="row g-2">
+                        @foreach($property->images as $image)
+                        <div class="col-md-4">
+                            <a href="{{ $image->url }}" target="_blank">
+                                <img src="{{ $image->url }}" class="img-fluid rounded border w-100" style="height:180px;object-fit:cover;" alt="Property photo">
+                            </a>
+                            @if($image->is_primary)<span class="badge bg-primary mt-1">Primary</span>@endif
+                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
-                </div>
+                @else
+                    <p class="text-muted mb-0">Vendor has not uploaded property gallery images yet.</p>
+                @endif
             </div>
         </div>
-        @endif
 
         <div class="card-panel mb-3">
             <div class="card-header">Property Details</div>
@@ -54,22 +58,31 @@
         @if($property->rooms->count())
         <div class="card-panel">
             <div class="card-header">Rooms ({{ $property->rooms->count() }})</div>
-            <div class="table-responsive">
-                <table class="table mb-0">
-                    <thead><tr><th>Room</th><th>Type</th><th>Capacity</th><th>Units</th><th>Price</th><th>Status</th></tr></thead>
-                    <tbody>
-                        @foreach($property->rooms as $room)
-                        <tr>
-                            <td>{{ $room->name }}</td>
-                            <td>{{ $room->room_type }}</td>
-                            <td>{{ $room->capacity }}</td>
-                            <td>{{ $room->total_units }}</td>
-                            <td>₹{{ number_format($room->price_per_night) }}</td>
-                            <td>{{ $room->status }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="card-body p-0">
+                @foreach($property->rooms as $room)
+                <div class="p-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>{{ $room->name }}</strong>
+                            <span class="text-muted small">· {{ ucfirst($room->room_type) }} · {{ $room->capacity }} guests · {{ $room->total_units }} units · ₹{{ number_format($room->price_per_night) }}/night</span>
+                        </div>
+                        <span class="badge bg-secondary">{{ $room->status }}</span>
+                    </div>
+                    @if($room->images->count())
+                        <div class="row g-2">
+                            @foreach($room->images as $image)
+                            <div class="col-4 col-md-3">
+                                <a href="{{ $image->url }}" target="_blank">
+                                    <img src="{{ $image->url }}" class="img-fluid rounded border w-100" style="height:100px;object-fit:cover;" alt="Room photo">
+                                </a>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-muted small mb-0">No room photos uploaded.</p>
+                    @endif
+                </div>
+                @endforeach
             </div>
         </div>
         @endif
@@ -83,7 +96,7 @@
                 @can('properties.approve')
                 <form action="{{ route('admin.properties.approve', $property) }}" method="post" class="mb-3">
                     @csrf
-                    <p class="small text-muted">Verify images, location on map, and room setup before approving.</p>
+                    <p class="small text-muted">Verify gallery images, location, and room setup before approving.</p>
                     <button class="btn btn-success w-100">✓ Approve & Publish</button>
                 </form>
                 <form action="{{ route('admin.properties.reject', $property) }}" method="post">
@@ -105,7 +118,8 @@
                 @if($property->owner?->vendorProfile)
                     <p class="mb-1"><strong>{{ $property->owner->vendorProfile->business_name }}</strong></p>
                     <p class="mb-1 small">{{ $property->owner->vendorProfile->contact_phone }}</p>
-                    <p class="mb-0 small text-muted">Vendor Status: {{ $property->owner->vendorProfile->status }}</p>
+                    <p class="mb-2 small text-muted">Vendor Status: {{ $property->owner->vendorProfile->status }}</p>
+                    <a href="{{ route('admin.vendors.show', $property->owner->vendorProfile) }}" class="btn btn-sm btn-outline-primary">View Vendor & Documents</a>
                 @else
                     <p class="text-muted small">No vendor profile linked.</p>
                 @endif

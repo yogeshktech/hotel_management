@@ -43,6 +43,11 @@ class Room extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function images()
+    {
+        return $this->hasMany(RoomImage::class);
+    }
+
     public function getPriceForPackage(string $packageType, int $childCount = 0): ?float
     {
         $pricing = $this->pricings()

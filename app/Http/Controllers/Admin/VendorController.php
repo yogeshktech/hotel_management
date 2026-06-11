@@ -30,7 +30,7 @@ class VendorController extends Controller
 
     public function show(VendorProfile $vendor)
     {
-        $vendor->load(['staff.homestays.location', 'staff.homestays.images', 'approver']);
+        $vendor->load(['staff.homestays.location', 'staff.homestays.images', 'approver', 'documents']);
 
         return view('admin.vendors.show', compact('vendor'));
     }

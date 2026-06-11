@@ -9,7 +9,7 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Country *</label>
-        <input type="text" name="country" class="form-control" value="{{ old('country', $location->country ?? 'India') }}" required>
+        <input type="text" name="country" class="form-control" value="{{ old('country', $location->country ?? 'India') }}" required placeholder="India">
     </div>
     <div class="col-md-4">
         <label class="form-label">State/Province</label>

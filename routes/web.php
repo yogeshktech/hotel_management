@@ -17,9 +17,18 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\Admin\VendorDocumentController as AdminVendorDocumentController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Vendor\BookingController as VendorBookingController;
+use App\Http\Controllers\Vendor\LocationController as VendorLocationController;
 use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
+use App\Http\Controllers\Vendor\DocumentController as VendorDocumentController;
+use App\Http\Controllers\Vendor\ProfileController as VendorProfileController;
+use App\Http\Controllers\Vendor\PropertyController as VendorPropertyController;
+use App\Http\Controllers\Vendor\PropertyImageController as VendorPropertyImageController;
+use App\Http\Controllers\Vendor\RoomController as VendorRoomController;
+use App\Http\Controllers\Vendor\RoomImageController as VendorRoomImageController;
 use App\Http\Controllers\Staff\Auth\LoginController as StaffLoginController;
 use App\Http\Controllers\Customer\Auth\LoginController as CustomerLoginController;
 use App\Http\Controllers\Customer\Auth\RegisterController as CustomerRegisterController;
@@ -101,6 +110,8 @@ Route::middleware(['auth:staff', 'active:staff'])->group(function () {
             Route::post('vendors/{vendor}/approve', [VendorController::class, 'approve'])->middleware('permission:vendors.approve')->name('vendors.approve');
             Route::post('vendors/{vendor}/reject', [VendorController::class, 'reject'])->middleware('permission:vendors.approve')->name('vendors.reject');
             Route::post('vendors/{vendor}/suspend', [VendorController::class, 'suspend'])->middleware('permission:vendors.manage')->name('vendors.suspend');
+            Route::post('vendors/{vendor}/documents/{document}/approve', [AdminVendorDocumentController::class, 'approve'])->middleware('permission:vendors.approve')->name('vendors.documents.approve');
+            Route::post('vendors/{vendor}/documents/{document}/reject', [AdminVendorDocumentController::class, 'reject'])->middleware('permission:vendors.approve')->name('vendors.documents.reject');
         });
 
         Route::middleware('permission:properties.view')->group(function () {
@@ -138,5 +149,45 @@ Route::middleware(['auth:staff', 'active:staff'])->group(function () {
 
     Route::middleware('role:vendor')->prefix('vendor')->name('vendor.')->group(function () {
         Route::get('/', [VendorDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('profile', [VendorProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [VendorProfileController::class, 'update'])->name('profile.update');
+
+        Route::get('documents', [VendorDocumentController::class, 'index'])->name('documents.index');
+        Route::post('documents', [VendorDocumentController::class, 'store'])->name('documents.store');
+        Route::delete('documents/{document}', [VendorDocumentController::class, 'destroy'])->name('documents.destroy');
+
+        Route::get('locations', [VendorLocationController::class, 'index'])->name('locations.index');
+        Route::get('locations/create', [VendorLocationController::class, 'create'])->name('locations.create');
+        Route::post('locations', [VendorLocationController::class, 'store'])->name('locations.store');
+
+        Route::get('properties', [VendorPropertyController::class, 'index'])->name('properties.index');
+        Route::get('properties/create', [VendorPropertyController::class, 'create'])->name('properties.create');
+        Route::post('properties', [VendorPropertyController::class, 'store'])->name('properties.store');
+        Route::get('properties/{property}', [VendorPropertyController::class, 'show'])->name('properties.show');
+        Route::get('properties/{property}/edit', [VendorPropertyController::class, 'edit'])->name('properties.edit');
+        Route::put('properties/{property}', [VendorPropertyController::class, 'update'])->name('properties.update');
+
+        Route::post('properties/{property}/images', [VendorPropertyImageController::class, 'store'])->name('properties.images.store');
+        Route::delete('properties/{property}/images/{image}', [VendorPropertyImageController::class, 'destroy'])->name('properties.images.destroy');
+        Route::post('properties/{property}/images/{image}/primary', [VendorPropertyImageController::class, 'setPrimary'])->name('properties.images.primary');
+
+        Route::get('properties/{property}/rooms/create', [VendorRoomController::class, 'create'])->name('rooms.create');
+        Route::post('properties/{property}/rooms', [VendorRoomController::class, 'store'])->name('rooms.store');
+        Route::get('properties/{property}/rooms/{room}/edit', [VendorRoomController::class, 'edit'])->name('rooms.edit');
+        Route::put('properties/{property}/rooms/{room}', [VendorRoomController::class, 'update'])->name('rooms.update');
+        Route::delete('properties/{property}/rooms/{room}', [VendorRoomController::class, 'destroy'])->name('rooms.destroy');
+
+        Route::post('properties/{property}/rooms/{room}/images', [VendorRoomImageController::class, 'store'])->name('rooms.images.store');
+        Route::delete('properties/{property}/rooms/{room}/images/{image}', [VendorRoomImageController::class, 'destroy'])->name('rooms.images.destroy');
+        Route::post('properties/{property}/rooms/{room}/images/{image}/primary', [VendorRoomImageController::class, 'setPrimary'])->name('rooms.images.primary');
+
+        Route::get('bookings', [VendorBookingController::class, 'index'])->name('bookings.index');
+        Route::get('bookings/create-offline', [VendorBookingController::class, 'createOffline'])->name('bookings.create-offline');
+        Route::post('bookings/offline', [VendorBookingController::class, 'storeOffline'])->name('bookings.store-offline');
+        Route::get('bookings/{booking}', [VendorBookingController::class, 'show'])->name('bookings.show');
+        Route::post('bookings/{booking}/check-in', [VendorBookingController::class, 'checkIn'])->name('bookings.check-in');
+        Route::post('bookings/{booking}/check-out', [VendorBookingController::class, 'checkOut'])->name('bookings.check-out');
+        Route::post('bookings/{booking}/cancel', [VendorBookingController::class, 'cancel'])->name('bookings.cancel');
     });
 });

@@ -30,7 +30,7 @@ class PropertyController extends Controller
 
     public function show(Homestay $property)
     {
-        $property->load(['location', 'owner.vendorProfile', 'images', 'rooms', 'bookings']);
+        $property->load(['location', 'owner.vendorProfile', 'images', 'rooms.images', 'bookings']);
 
         return view('admin.properties.show', compact('property'));
     }

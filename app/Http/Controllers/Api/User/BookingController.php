@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\PromoCode;
 use App\Models\Room;
 use App\Services\BookingPricingService;
+use App\Services\RoomAvailabilityService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class BookingController extends ApiController
         new OA\Property(property: 'promo_code', type: 'string'),
     ]))]
     #[OA\Response(response: 200, description: 'Price breakdown')]
-    public function calculatePrice(Request $request, BookingPricingService $pricingService)
+    public function calculatePrice(Request $request, BookingPricingService $pricingService, RoomAvailabilityService $availabilityService)
     {
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
@@ -61,6 +62,16 @@ class BookingController extends ApiController
 
         $pricing['promo_discount'] = $promoDiscount;
         $pricing['total_price'] = max(0, $pricing['total_price'] - $promoDiscount);
+        $pricing['available'] = $availabilityService->isAvailable(
+            $room,
+            $validated['check_in'],
+            $validated['check_out']
+        );
+        $pricing['units_available'] = $availabilityService->availableUnits(
+            $room,
+            $validated['check_in'],
+            $validated['check_out']
+        );
 
         return $this->success($pricing);
     }
@@ -111,7 +122,7 @@ class BookingController extends ApiController
         new OA\Property(property: 'payment_method', type: 'string', example: 'razorpay'),
     ]))]
     #[OA\Response(response: 201, description: 'Booking created')]
-    public function store(Request $request, BookingPricingService $pricingService)
+    public function store(Request $request, BookingPricingService $pricingService, RoomAvailabilityService $availabilityService)
     {
         $validated = $request->validate([
             'room_id' => 'required|exists:rooms,id',
@@ -131,14 +142,8 @@ class BookingController extends ApiController
             return $this->error('Property not available', 422);
         }
 
-        $overlap = Booking::where('room_id', $room->id)
-            ->whereNotIn('status', ['cancelled', 'rejected'])
-            ->where('check_in', '<', $validated['check_out'])
-            ->where('check_out', '>', $validated['check_in'])
-            ->exists();
-
-        if ($overlap) {
-            return $this->error('Room not available for selected dates', 422);
+        if (! $availabilityService->isAvailable($room, $validated['check_in'], $validated['check_out'])) {
+            return $this->error('Room not available for selected dates. It may be booked offline or online.', 422);
         }
 
         try {

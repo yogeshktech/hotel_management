@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PropertyImage extends Model
+class RoomImage extends Model
 {
     protected $fillable = [
-        'homestay_id',
+        'room_id',
         'path',
         'caption',
         'is_primary',
@@ -22,9 +22,9 @@ class PropertyImage extends Model
         ];
     }
 
-    public function homestay(): BelongsTo
+    public function room(): BelongsTo
     {
-        return $this->belongsTo(Homestay::class);
+        return $this->belongsTo(Room::class);
     }
 
     public function getUrlAttribute(): string
