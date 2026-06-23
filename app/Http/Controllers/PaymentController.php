@@ -20,7 +20,7 @@ class PaymentController extends Controller
                 ->with('info', 'This booking is already paid.');
         }
 
-        $api = new Api(config('services.razorpay.key', env('RAZORPAY_KEY')), config('services.razorpay.secret', env('RAZORPAY_SECRET')));
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
         $order = $api->order->create([
             'receipt' => $booking->booking_reference,
             'amount' => (int) round($booking->total_price * 100),
@@ -39,7 +39,7 @@ class PaymentController extends Controller
             'booking_id' => 'required|exists:bookings,id',
         ]);
 
-        $api = new Api(config('services.razorpay.key', env('RAZORPAY_KEY')), config('services.razorpay.secret', env('RAZORPAY_SECRET')));
+        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
         try {
             $api->utility->verifyPaymentSignature([
