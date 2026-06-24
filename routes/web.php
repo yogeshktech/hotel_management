@@ -41,6 +41,10 @@ use App\Http\Controllers\Customer\ProfileController as CustomerProfileController
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\PublicStorageController;
 
+Route::get('/media/{path}', PublicStorageController::class)
+    ->where('path', '.*')
+    ->name('media.public');
+
 Route::get('/storage/{path}', PublicStorageController::class)
     ->where('path', '.*')
     ->name('storage.public');
