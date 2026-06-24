@@ -19,6 +19,7 @@ class RbacSeeder extends Seeder
         $permissions = [
             'dashboard.view',
             'users.view', 'users.create', 'users.edit', 'users.delete',
+            'customers.view', 'customers.create', 'customers.edit', 'customers.delete',
             'roles.view', 'roles.manage', 'roles.delete',
             'vendors.view', 'vendors.approve', 'vendors.manage', 'vendors.delete',
             'properties.view', 'properties.approve', 'properties.manage', 'properties.delete',
@@ -41,6 +42,7 @@ class RbacSeeder extends Seeder
             'admin_staff' => [
                 'dashboard.view',
                 'users.view', 'users.create', 'users.edit', 'users.delete',
+                'customers.view', 'customers.create', 'customers.edit', 'customers.delete',
                 'roles.view',
                 'vendors.view', 'vendors.approve', 'vendors.manage', 'vendors.delete',
                 'properties.view', 'properties.approve', 'properties.delete',
@@ -53,11 +55,13 @@ class RbacSeeder extends Seeder
                 'vendors.view',
                 'properties.view',
                 'bookings.view', 'bookings.manage',
+                'customers.view', 'customers.create',
             ],
             'vendor' => [
                 'dashboard.view',
                 'properties.view', 'properties.manage', 'properties.delete',
                 'bookings.view', 'bookings.manage', 'bookings.delete',
+                'customers.view', 'customers.create',
                 'locations.manage', 'locations.delete',
                 'documents.delete',
             ],

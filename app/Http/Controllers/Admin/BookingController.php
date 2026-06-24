@@ -74,7 +74,10 @@ class BookingController extends Controller
     public function storeOffline(Request $request, OfflineBookingService $offlineBookingService)
     {
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'nullable|exists:customers,id',
+            'guest_name' => 'required_without:customer_id|string|max:255',
+            'guest_phone' => 'required_without:customer_id|string|max:20',
+            'guest_email' => 'nullable|email|max:255',
             'room_id' => 'required|exists:rooms,id',
             'guest_package' => 'required|in:adult,couple,family,child',
             'child_count' => 'nullable|integer|min:0|max:4',

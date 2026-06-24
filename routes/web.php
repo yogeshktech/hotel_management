@@ -15,6 +15,7 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
@@ -106,6 +107,16 @@ Route::middleware(['auth:staff', 'active:staff'])->group(function () {
             Route::delete('staff/{staff}', [StaffController::class, 'destroy'])->middleware('permission:users.delete')->name('staff.destroy');
             Route::post('staff/{staff}/permissions', [StaffController::class, 'updatePermissions'])->middleware('permission:roles.manage')->name('staff.permissions');
             Route::post('staff/{staff}/toggle-active', [StaffController::class, 'toggleActive'])->name('staff.toggleActive');
+        });
+
+        Route::middleware('permission:customers.view')->group(function () {
+            Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+            Route::get('customers/create', [CustomerController::class, 'create'])->middleware('permission:customers.create')->name('customers.create');
+            Route::post('customers', [CustomerController::class, 'store'])->middleware('permission:customers.create')->name('customers.store');
+            Route::get('customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+            Route::get('customers/{customer}/edit', [CustomerController::class, 'edit'])->middleware('permission:customers.edit')->name('customers.edit');
+            Route::put('customers/{customer}', [CustomerController::class, 'update'])->middleware('permission:customers.edit')->name('customers.update');
+            Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->middleware('permission:customers.delete')->name('customers.destroy');
         });
 
         Route::middleware('permission:roles.view')->group(function () {

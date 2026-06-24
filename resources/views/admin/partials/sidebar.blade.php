@@ -17,6 +17,11 @@
             <span>👥</span> Team & Staff
         </a>
         @endcan
+        @can('customers.view')
+        <a href="{{ route('admin.customers.index') }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+            <span>🧳</span> Customers / Guests
+        </a>
+        @endcan
         <a href="{{ route('admin.profile.edit') }}" class="{{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
             <span>👤</span> My Profile
         </a>
