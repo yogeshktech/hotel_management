@@ -5,14 +5,25 @@ namespace App\Http\Controllers\Vendor;
 use App\Models\Booking;
 use App\Models\BookingReview;
 use App\Models\Homestay;
+use App\Models\Room;
+use App\Services\RoomAvailabilityService;
 
 class DashboardController extends VendorController
 {
-    public function index()
+    public function index(RoomAvailabilityService $availabilityService)
     {
         $staff = $this->staff();
         $profile = $staff->vendorProfile;
         $homestayIds = $staff->homestays()->pluck('id');
+
+        $rooms = Room::whereIn('homestay_id', $homestayIds)
+            ->where('status', 'active')
+            ->with('homestay')
+            ->orderBy('homestay_id')
+            ->orderBy('name')
+            ->get();
+
+        $roomAvailability = $availabilityService->vendorAvailabilitySummary($rooms);
 
         $stats = [
             'total_properties' => $staff->homestays()->count(),
@@ -45,6 +56,6 @@ class DashboardController extends VendorController
 
         $onboarding = $profile?->onboardingSteps() ?? [];
 
-        return view('vendor.dashboard', compact('staff', 'profile', 'stats', 'onboarding'));
+        return view('vendor.dashboard', compact('staff', 'profile', 'stats', 'onboarding', 'roomAvailability'));
     }
 }
