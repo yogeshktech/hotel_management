@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\User;
 
+use App\Support\PublicStorage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,7 +12,7 @@ class PropertyImageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'url' => asset('storage/' . $this->path),
+            'url' => PublicStorage::url($this->path),
             'caption' => $this->caption,
             'is_primary' => $this->is_primary,
         ];

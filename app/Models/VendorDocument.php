@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PublicStorage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class VendorDocument extends Model
@@ -35,7 +36,7 @@ class VendorDocument extends Model
 
     public function getUrlAttribute(): string
     {
-        return asset('storage/' . $this->file_path);
+        return PublicStorage::url($this->file_path) ?? '';
     }
 
     public function isImage(): bool

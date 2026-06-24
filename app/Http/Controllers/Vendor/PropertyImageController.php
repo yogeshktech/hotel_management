@@ -20,10 +20,16 @@ class PropertyImageController extends VendorController
 
         foreach ($request->file('images') as $file) {
             $path = $file->store('property-images/' . $property->id, 'public');
+
+            if (! $path || ! Storage::disk('public')->exists($path)) {
+                continue;
+            }
+
+            $sortOrder = $property->images()->count();
             $property->images()->create([
                 'path' => $path,
-                'is_primary' => $property->images()->count() === 0,
-                'sort_order' => $property->images()->count(),
+                'is_primary' => $sortOrder === 0,
+                'sort_order' => $sortOrder,
             ]);
         }
 

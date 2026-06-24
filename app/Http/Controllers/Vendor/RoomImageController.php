@@ -22,10 +22,16 @@ class RoomImageController extends VendorController
 
         foreach ($request->file('images') as $file) {
             $path = $file->store('room-images/' . $room->id, 'public');
+
+            if (! $path || ! Storage::disk('public')->exists($path)) {
+                continue;
+            }
+
+            $sortOrder = $room->images()->count();
             $room->images()->create([
                 'path' => $path,
-                'is_primary' => $room->images()->count() === 0,
-                'sort_order' => $room->images()->count(),
+                'is_primary' => $sortOrder === 0,
+                'sort_order' => $sortOrder,
             ]);
         }
 

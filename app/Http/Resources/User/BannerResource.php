@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\User;
 
+use App\Support\PublicStorage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -13,7 +14,7 @@ class BannerResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'image' => $this->image ? asset('storage/' . $this->image) : null,
+            'image' => PublicStorage::url($this->image),
             'button_text' => $this->button_text,
             'button_url' => $this->button_url,
             'placement' => $this->placement,

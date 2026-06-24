@@ -39,6 +39,11 @@ use App\Http\Controllers\Customer\Auth\RegisterController as CustomerRegisterCon
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
+use App\Http\Controllers\PublicStorageController;
+
+Route::get('/storage/{path}', PublicStorageController::class)
+    ->where('path', '.*')
+    ->name('storage.public');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/properties', [SitePropertyController::class, 'index'])->name('properties.index');

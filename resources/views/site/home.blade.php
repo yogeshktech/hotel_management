@@ -4,7 +4,9 @@
 
 @section('content')
 @php
-    $heroImg = $banners->first()?->image ? asset('storage/'.$banners->first()->image) : 'https://images.unsplash.com/photo-1582719508461-905c778771fd?w=1600&q=80';
+    $heroImg = $banners->first()?->image
+        ? \App\Support\PublicStorage::url($banners->first()->image)
+        : 'https://images.unsplash.com/photo-1582719508461-905c778771fd?w=1600&q=80';
 @endphp
 <section class="site-hero d-flex align-items-center">
     <img src="{{ $heroImg }}" alt="" class="site-hero-bg">
