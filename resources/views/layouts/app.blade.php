@@ -100,5 +100,19 @@
             @yield('content')
         </main>
     </div>
+    <script>
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-password-toggle]');
+        if (!btn) return;
+        const input = document.getElementById(btn.dataset.passwordToggle);
+        if (!input) return;
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.querySelector('.icon-eye-show')?.classList.toggle('d-none', show);
+        btn.querySelector('.icon-eye-hide')?.classList.toggle('d-none', !show);
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        btn.setAttribute('title', show ? 'Hide password' : 'Show password');
+    });
+    </script>
 </body>
 </html>

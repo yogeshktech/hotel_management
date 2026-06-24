@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Staff;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
@@ -49,6 +48,12 @@ class RbacSeeder extends Seeder
                 'locations.manage', 'locations.delete',
                 'banners.manage', 'blogs.manage',
             ],
+            'staff' => [
+                'dashboard.view',
+                'vendors.view',
+                'properties.view',
+                'bookings.view', 'bookings.manage',
+            ],
             'vendor' => [
                 'dashboard.view',
                 'properties.view', 'properties.manage', 'properties.delete',
@@ -62,16 +67,5 @@ class RbacSeeder extends Seeder
             $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'staff']);
             $role->syncPermissions($perms);
         }
-
-        $superAdmin = Staff::firstOrCreate(
-            ['email' => 'superadmin@hotel.com'],
-            ['name' => 'Super Admin', 'password' => bcrypt('password123'), 'phone' => '+919876543210', 'role' => 'super_admin', 'department' => 'Management', 'is_active' => true]
-        );
-        $superAdmin->syncRoles('super_admin');
-
-        Staff::firstOrCreate(
-            ['email' => 'staff@hotel.com'],
-            ['name' => 'Admin Staff', 'password' => bcrypt('password123'), 'phone' => '+919876543211', 'role' => 'admin_staff', 'department' => 'Operations', 'is_active' => true]
-        )->syncRoles('admin_staff');
     }
 }

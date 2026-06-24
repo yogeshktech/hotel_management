@@ -26,14 +26,12 @@
                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
                         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Password *</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Confirm Password *</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
-                    </div>
+                    @include('partials.password-field', ['name' => 'password', 'label' => 'Password *'])
+                    @include('partials.password-field', [
+                        'name' => 'password_confirmation',
+                        'label' => 'Confirm Password *',
+                        'wrapperClass' => 'mb-4',
+                    ])
                     <button type="submit" class="btn btn-site-gold w-100 mb-3">Create Account</button>
                     <p class="text-center small mb-0">Already registered? <a href="{{ route('customer.login') }}">Sign in</a></p>
                 </form>

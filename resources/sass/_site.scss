@@ -177,3 +177,43 @@
 .site-status-badge {
     font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 999px;
 }
+
+.password-toggle-wrap {
+    position: relative;
+
+    .form-control {
+        padding-right: 2.75rem;
+    }
+
+    .form-control.is-invalid {
+        padding-right: 3.25rem;
+        background-position: right 2.5rem center;
+    }
+}
+
+.password-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.65rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--site-muted);
+    padding: 0.25rem;
+    line-height: 0;
+    border-radius: 0.35rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        color: var(--site-teal);
+        background: rgba(13, 79, 79, 0.06);
+    }
+
+    &:focus {
+        outline: 2px solid rgba(13, 79, 79, 0.25);
+        outline-offset: 1px;
+    }
+}

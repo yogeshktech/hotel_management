@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Staff;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -45,5 +47,18 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('customer.login');
+    }
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        if (Staff::where('email', $request->input('email'))->exists()) {
+            throw ValidationException::withMessages([
+                'email' => 'This email is for staff/admin. Use Staff Login: ' . route('staff.login'),
+            ]);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.failed'),
+        ]);
     }
 }

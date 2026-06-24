@@ -91,7 +91,7 @@ Route::middleware(['auth:customer', 'active:customer'])->prefix('customer')->nam
 // ─── Staff Panel (Super Admin / Team / Vendor) ───
 Route::middleware(['auth:staff', 'active:staff'])->group(function () {
 
-    Route::middleware('role:super_admin|admin_staff')->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('role:super_admin|admin_staff|staff')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
