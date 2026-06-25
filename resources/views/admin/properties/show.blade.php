@@ -48,7 +48,12 @@
                     <dt class="col-sm-4">Capacity</dt>
                     <dd class="col-sm-8">{{ $property->max_guests }} guests · {{ $property->bedrooms }} BR · {{ $property->beds }} beds · {{ $property->bathrooms }} bath</dd>
                     <dt class="col-sm-4">Price</dt>
-                    <dd class="col-sm-8">₹{{ number_format($property->price_per_night) }}/night</dd>
+                    <dd class="col-sm-8">₹{{ number_format($property->price_per_night) }}/night (listing)</dd>
+                    <dt class="col-sm-4">Fees</dt>
+                    <dd class="col-sm-8">
+                        Cleaning ₹{{ number_format($property->cleaning_fee, 0) }}
+                        · Service fee {{ $property->service_fee_percentage }}%
+                    </dd>
                     <dt class="col-sm-4">Status</dt>
                     <dd class="col-sm-8"><span class="badge bg-secondary">{{ $property->status }}</span></dd>
                 </dl>
@@ -57,17 +62,70 @@
 
         @if($property->rooms->count())
         <div class="card-panel">
-            <div class="card-header">Rooms ({{ $property->rooms->count() }})</div>
+            <div class="card-header">Rooms & Pricing ({{ $property->rooms->count() }})</div>
             <div class="card-body p-0">
                 @foreach($property->rooms as $room)
                 <div class="p-3 border-bottom">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
                             <strong>{{ $room->name }}</strong>
-                            <span class="text-muted small">· {{ ucfirst($room->room_type) }} · {{ $room->capacity }} guests · {{ $room->total_units }} units · ₹{{ number_format($room->price_per_night) }}/night</span>
+                            <span class="text-muted small">· {{ ucfirst($room->room_type) }} · {{ $room->capacity }} guests · {{ $room->total_units }} units · ₹{{ number_format($room->price_per_night) }}/night (couple)</span>
                         </div>
                         <span class="badge bg-secondary">{{ $room->status }}</span>
                     </div>
+
+                    @if($room->pricings->count())
+                    <div class="table-responsive mb-2">
+                        <table class="table table-sm table-bordered mb-0 small">
+                            <thead class="table-light">
+                                <tr><th>Package</th><th>Price/Night</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach($room->pricings->sortBy(fn ($p) => [$p->package_type, $p->child_count]) as $pricing)
+                                <tr>
+                                    <td>{{ \App\Models\RoomPricing::packageLabel($pricing->package_type, $pricing->child_count) }}</td>
+                                    <td>₹{{ number_format($pricing->price_per_night, 0) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
+
+                    @if($room->seasons->count())
+                    <div class="mb-2">
+                        <strong class="small">Seasonal pricing:</strong>
+                        <ul class="small mb-0 ps-3">
+                            @foreach($room->seasons as $season)
+                            <li>
+                                {{ $season->name }} ({{ $season->start_date->format('d M Y') }} – {{ $season->end_date->format('d M Y') }})
+                                — <span class="badge {{ $season->price_multiplier > 1 ? 'text-bg-warning' : 'text-bg-success' }}">×{{ $season->price_multiplier }}</span>
+                                @unless($season->is_active)<span class="text-muted">(paused)</span>@endunless
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    @if($room->addons->count())
+                    <div class="mb-2">
+                        <strong class="small">Facilities &amp; add-ons:</strong>
+                        <table class="table table-sm table-bordered mb-0 small">
+                            <thead class="table-light"><tr><th>Facility</th><th>Price</th><th>Charge</th><th>Package</th></tr></thead>
+                            <tbody>
+                                @foreach($room->addons as $addon)
+                                <tr>
+                                    <td>{{ $addon->name }} @unless($addon->is_active)<span class="text-muted">(off)</span>@endunless</td>
+                                    <td>{{ $addon->isFree() ? 'Free' : '₹'.number_format($addon->price, 0) }}</td>
+                                    <td>{{ $addon->chargeLabel() }}</td>
+                                    <td>{{ $addon->is_included_in_package ? 'Yes' : 'No' }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
+
                     @if($room->images->count())
                         <div class="row g-2">
                             @foreach($room->images as $image)

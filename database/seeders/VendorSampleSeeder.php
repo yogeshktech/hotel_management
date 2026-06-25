@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\Homestay;
 use App\Models\Location;
 use App\Models\Room;
-use App\Models\RoomPricing;
+use App\Support\RoomPackagePricing;
 use App\Models\Staff;
 use App\Models\VendorProfile;
 use Illuminate\Database\Seeder;
@@ -71,31 +71,8 @@ class VendorSampleSeeder extends Seeder
                     ['room_type' => $r['type'], 'capacity' => $r['capacity'], 'bed_count' => 2,
                      'price_per_night' => $r['base'], 'total_units' => $r['units'], 'status' => 'active']
                 );
-                $this->seedPricing($room, $r['base']);
+                RoomPackagePricing::syncForRoom($room, $r['base']);
             }
-        }
-    }
-
-    private function seedPricing(Room $room, float $base): void
-    {
-        $packages = [
-            ['package_type' => 'adult', 'child_count' => 0, 'adult_count' => 1, 'multiplier' => 1.0],
-            ['package_type' => 'couple', 'child_count' => 0, 'adult_count' => 2, 'multiplier' => 1.6],
-            ['package_type' => 'family', 'child_count' => 1, 'adult_count' => 2, 'multiplier' => 2.0],
-            ['package_type' => 'family', 'child_count' => 2, 'adult_count' => 2, 'multiplier' => 2.3],
-            ['package_type' => 'family', 'child_count' => 3, 'adult_count' => 2, 'multiplier' => 2.6],
-            ['package_type' => 'family', 'child_count' => 4, 'adult_count' => 2, 'multiplier' => 2.9],
-            ['package_type' => 'child', 'child_count' => 1, 'adult_count' => 0, 'multiplier' => 0.4],
-            ['package_type' => 'child', 'child_count' => 2, 'adult_count' => 0, 'multiplier' => 0.7],
-            ['package_type' => 'child', 'child_count' => 3, 'adult_count' => 0, 'multiplier' => 0.9],
-            ['package_type' => 'child', 'child_count' => 4, 'adult_count' => 0, 'multiplier' => 1.1],
-        ];
-
-        foreach ($packages as $p) {
-            RoomPricing::firstOrCreate(
-                ['room_id' => $room->id, 'package_type' => $p['package_type'], 'child_count' => $p['child_count']],
-                ['adult_count' => $p['adult_count'], 'price_per_night' => round($base * $p['multiplier'])]
-            );
         }
     }
 }

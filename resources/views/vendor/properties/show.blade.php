@@ -64,8 +64,8 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-3"><div class="stat-card"><div class="stat-value">{{ $property->rooms->count() }}</div><div class="stat-label">Rooms</div></div></div>
-    <div class="col-md-3"><div class="stat-card"><div class="stat-value">₹{{ number_format($property->price_per_night, 0) }}</div><div class="stat-label">Base Price</div></div></div>
-    <div class="col-md-3"><div class="stat-card"><div class="stat-value">{{ $property->max_guests }}</div><div class="stat-label">Max Guests</div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div class="stat-value">₹{{ number_format($property->price_per_night, 0) }}</div><div class="stat-label">Listing Price</div></div></div>
+    <div class="col-md-3"><div class="stat-card"><div class="stat-value">{{ $property->service_fee_percentage }}%</div><div class="stat-label">Service Fee · ₹{{ number_format($property->cleaning_fee, 0) }} cleaning</div></div></div>
     <div class="col-md-3"><div class="stat-card"><div class="stat-value">{{ $property->bookings()->count() }}</div><div class="stat-label">Bookings</div></div></div>
 </div>
 
@@ -74,7 +74,7 @@
     <div class="table-responsive">
         <table class="table table-hover mb-0">
             <thead>
-                <tr><th>Room</th><th>Photos</th><th>Type</th><th>Capacity</th><th>Units</th><th>Price/Night</th><th>Status</th><th></th></tr>
+                <tr><th>Room</th><th>Photos</th><th>Type</th><th>Capacity</th><th>Units</th><th>Couple/Night</th><th>Seasons</th><th>Status</th><th></th></tr>
             </thead>
             <tbody>
                 @forelse($property->rooms as $room)
@@ -85,9 +85,10 @@
                         <td>{{ $room->capacity }}</td>
                         <td>{{ $room->total_units }}</td>
                         <td>₹{{ number_format($room->price_per_night, 0) }}</td>
+                        <td>{{ $room->seasons->where('is_active', true)->count() }} active</td>
                         <td><span class="badge text-bg-secondary">{{ $room->status }}</span></td>
                         <td class="text-end text-nowrap">
-                            <a href="{{ route('vendor.rooms.edit', [$property, $room]) }}" class="btn btn-sm btn-outline-primary">Edit & Photos</a>
+                            <a href="{{ route('vendor.rooms.edit', [$property, $room]) }}" class="btn btn-sm btn-outline-primary">Pricing & Photos</a>
                             @can('properties.delete')
                             <form action="{{ route('vendor.rooms.destroy', [$property, $room]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this room?')">
                                 @csrf @method('DELETE')
@@ -97,7 +98,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="text-center text-muted py-4">No rooms yet. <a href="{{ route('vendor.rooms.create', $property) }}">Add your first room</a></td></tr>
+                    <tr><td colspan="9" class="text-center text-muted py-4">No rooms yet. <a href="{{ route('vendor.rooms.create', $property) }}">Add your first room</a></td></tr>
                 @endforelse
             </tbody>
         </table>

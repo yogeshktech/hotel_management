@@ -49,13 +49,21 @@
         <label class="form-label">Bathrooms *</label>
         <input type="number" name="bathrooms" class="form-control" min="0" value="{{ old('bathrooms', $property->bathrooms ?? 1) }}" required>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <label class="form-label">Base Price / Night (₹) *</label>
         <input type="number" name="price_per_night" class="form-control" min="0" step="0.01" value="{{ old('price_per_night', $property->price_per_night ?? '') }}" required>
+        <div class="form-text">Shown as “from” price on listing</div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <label class="form-label">Cleaning Fee (₹)</label>
         <input type="number" name="cleaning_fee" class="form-control" min="0" step="0.01" value="{{ old('cleaning_fee', $property->cleaning_fee ?? 0) }}">
+        <div class="form-text">One-time fee per booking</div>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Service Fee (%)</label>
+        <input type="number" name="service_fee_percentage" class="form-control" min="0" max="100" step="0.1"
+            value="{{ old('service_fee_percentage', $property->service_fee_percentage ?? 12.5) }}">
+        <div class="form-text">% of room charges added at checkout</div>
     </div>
     <div class="col-12">
         <label class="form-label d-block">Amenities</label>

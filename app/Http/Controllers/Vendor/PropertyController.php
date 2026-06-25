@@ -40,6 +40,7 @@ class PropertyController extends VendorController
             'bathrooms' => 'required|integer|min:0',
             'price_per_night' => 'required|numeric|min:0',
             'cleaning_fee' => 'nullable|numeric|min:0',
+            'service_fee_percentage' => 'nullable|numeric|min:0|max:100',
             'address' => 'required|string|max:500',
             'amenities' => 'nullable|array',
             'amenities.*' => 'string|max:50',
@@ -51,6 +52,7 @@ class PropertyController extends VendorController
             'staff_id' => $this->staff()->id,
             'currency' => 'INR',
             'cleaning_fee' => $validated['cleaning_fee'] ?? 0,
+            'service_fee_percentage' => $validated['service_fee_percentage'] ?? 12.5,
             'amenities' => $validated['amenities'] ?? [],
             'status' => 'pending',
         ]);
@@ -62,7 +64,7 @@ class PropertyController extends VendorController
     public function show(Homestay $property)
     {
         $this->ensureOwnProperty($property);
-        $property->load(['location', 'rooms.pricings', 'rooms.images', 'images']);
+        $property->load(['location', 'rooms.pricings', 'rooms.seasons', 'rooms.addons', 'rooms.images', 'images']);
 
         return view('vendor.properties.show', compact('property'));
     }
@@ -89,6 +91,7 @@ class PropertyController extends VendorController
             'bathrooms' => 'required|integer|min:0',
             'price_per_night' => 'required|numeric|min:0',
             'cleaning_fee' => 'nullable|numeric|min:0',
+            'service_fee_percentage' => 'nullable|numeric|min:0|max:100',
             'address' => 'required|string|max:500',
             'amenities' => 'nullable|array',
             'amenities.*' => 'string|max:50',
@@ -97,6 +100,7 @@ class PropertyController extends VendorController
         $property->update([
             ...$validated,
             'cleaning_fee' => $validated['cleaning_fee'] ?? 0,
+            'service_fee_percentage' => $validated['service_fee_percentage'] ?? 12.5,
             'amenities' => $validated['amenities'] ?? [],
             'status' => $property->status === 'active' ? 'active' : 'pending',
         ]);

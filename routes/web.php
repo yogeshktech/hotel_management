@@ -33,6 +33,8 @@ use App\Http\Controllers\Vendor\PropertyController as VendorPropertyController;
 use App\Http\Controllers\Vendor\PropertyImageController as VendorPropertyImageController;
 use App\Http\Controllers\Vendor\RoomController as VendorRoomController;
 use App\Http\Controllers\Vendor\RoomImageController as VendorRoomImageController;
+use App\Http\Controllers\Vendor\RoomAddonController as VendorRoomAddonController;
+use App\Http\Controllers\Vendor\RoomPricingController as VendorRoomPricingController;
 use App\Http\Controllers\Staff\Auth\LoginController as StaffLoginController;
 use App\Http\Controllers\Customer\Auth\LoginController as CustomerLoginController;
 use App\Http\Controllers\Customer\Auth\RegisterController as CustomerRegisterController;
@@ -218,6 +220,17 @@ Route::middleware(['auth:staff', 'active:staff'])->group(function () {
         Route::post('properties/{property}/rooms/{room}/images', [VendorRoomImageController::class, 'store'])->name('rooms.images.store');
         Route::delete('properties/{property}/rooms/{room}/images/{image}', [VendorRoomImageController::class, 'destroy'])->middleware('permission:properties.delete')->name('rooms.images.destroy');
         Route::post('properties/{property}/rooms/{room}/images/{image}/primary', [VendorRoomImageController::class, 'setPrimary'])->name('rooms.images.primary');
+
+        Route::put('properties/{property}/rooms/{room}/pricings', [VendorRoomPricingController::class, 'updatePackages'])->name('rooms.pricings.update');
+        Route::post('properties/{property}/rooms/{room}/pricings/reset', [VendorRoomPricingController::class, 'resetPackages'])->name('rooms.pricings.reset');
+        Route::post('properties/{property}/rooms/{room}/seasons', [VendorRoomPricingController::class, 'storeSeason'])->name('rooms.seasons.store');
+        Route::put('properties/{property}/rooms/{room}/seasons/{season}', [VendorRoomPricingController::class, 'updateSeason'])->name('rooms.seasons.update');
+        Route::delete('properties/{property}/rooms/{room}/seasons/{season}', [VendorRoomPricingController::class, 'destroySeason'])->name('rooms.seasons.destroy');
+
+        Route::put('properties/{property}/rooms/{room}/addons', [VendorRoomAddonController::class, 'updateAddons'])->name('rooms.addons.update');
+        Route::post('properties/{property}/rooms/{room}/addons', [VendorRoomAddonController::class, 'store'])->name('rooms.addons.store');
+        Route::post('properties/{property}/rooms/{room}/addons/reset', [VendorRoomAddonController::class, 'resetDefaults'])->name('rooms.addons.reset');
+        Route::delete('properties/{property}/rooms/{room}/addons/{addon}', [VendorRoomAddonController::class, 'destroy'])->name('rooms.addons.destroy');
 
         Route::get('bookings', [VendorBookingController::class, 'index'])->name('bookings.index');
         Route::get('bookings/create-offline', [VendorBookingController::class, 'createOffline'])->name('bookings.create-offline');

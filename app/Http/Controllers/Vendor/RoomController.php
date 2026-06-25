@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Models\Homestay;
 use App\Models\Room;
-use App\Models\RoomPricing;
+use App\Support\RoomAddonCatalog;
+use App\Support\RoomPackagePricing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,7 +38,8 @@ class RoomController extends VendorController
             'amenities' => [],
         ]);
 
-        $this->seedDefaultPricing($room, (float) $validated['price_per_night']);
+        RoomPackagePricing::syncForRoom($room, (float) $validated['price_per_night']);
+        RoomAddonCatalog::syncForRoom($room);
 
         return redirect()->route('vendor.rooms.edit', [$property, $room])
             ->with('success', 'Room added. Now upload room gallery photos below.');
@@ -48,7 +50,7 @@ class RoomController extends VendorController
         $this->ensureOwnProperty($property);
         abort_if($room->homestay_id !== $property->id, 404);
 
-        $room->load(['pricings', 'images']);
+        $room->load(['pricings', 'images', 'seasons', 'addons']);
 
         return view('vendor.rooms.edit', compact('property', 'room'));
     }
@@ -72,8 +74,7 @@ class RoomController extends VendorController
         $room->update($validated);
 
         if ($request->boolean('refresh_pricing')) {
-            $room->pricings()->delete();
-            $this->seedDefaultPricing($room, (float) $validated['price_per_night']);
+            RoomPackagePricing::syncForRoom($room, (float) $validated['price_per_night']);
         }
 
         return redirect()->route('vendor.properties.show', $property)
@@ -98,26 +99,5 @@ class RoomController extends VendorController
 
         return redirect()->route('vendor.properties.show', $property)
             ->with('success', 'Room deleted.');
-    }
-
-    private function seedDefaultPricing(Room $room, float $base): void
-    {
-        $packages = [
-            ['package_type' => 'adult', 'child_count' => 0, 'adult_count' => 1, 'multiplier' => 1.0],
-            ['package_type' => 'couple', 'child_count' => 0, 'adult_count' => 2, 'multiplier' => 1.6],
-            ['package_type' => 'family', 'child_count' => 1, 'adult_count' => 2, 'multiplier' => 2.0],
-            ['package_type' => 'family', 'child_count' => 2, 'adult_count' => 2, 'multiplier' => 2.3],
-            ['package_type' => 'child', 'child_count' => 1, 'adult_count' => 0, 'multiplier' => 0.4],
-        ];
-
-        foreach ($packages as $p) {
-            RoomPricing::create([
-                'room_id' => $room->id,
-                'package_type' => $p['package_type'],
-                'child_count' => $p['child_count'],
-                'adult_count' => $p['adult_count'],
-                'price_per_night' => round($base * $p['multiplier']),
-            ]);
-        }
     }
 }

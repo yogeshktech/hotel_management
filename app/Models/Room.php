@@ -48,6 +48,16 @@ class Room extends Model
         return $this->hasMany(RoomImage::class);
     }
 
+    public function seasons()
+    {
+        return $this->hasMany(RoomPricingSeason::class)->orderBy('start_date');
+    }
+
+    public function addons()
+    {
+        return $this->hasMany(RoomAddon::class)->orderBy('sort_order');
+    }
+
     public function getPriceForPackage(string $packageType, int $childCount = 0): ?float
     {
         $pricing = $this->pricings()

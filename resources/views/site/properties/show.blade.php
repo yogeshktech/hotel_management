@@ -8,6 +8,7 @@
     $mainImg = $images->first()?->url ?? 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80';
     $rating = $property->reviews_avg_overall_rating ? round($property->reviews_avg_overall_rating, 1) : null;
     $activeRooms = $property->rooms->where('status', 'active');
+    $fromPrice = $activeRooms->min('price_per_night') ?? $property->price_per_night;
 @endphp
 
 <section class="py-4 bg-white">
@@ -81,7 +82,7 @@
                             <p class="small mb-0">{{ \Illuminate\Support\Str::limit($room->description, 100) }}</p>
                         </div>
                         <div class="col-md-3 text-md-end">
-                            <div class="site-price mb-2">₹{{ number_format($room->price_per_night, 0) }}<small>/night</small></div>
+                            <div class="site-price mb-2">₹{{ number_format($room->price_per_night, 0) }}<small>/night (2 guests)</small></div>
                             <button type="button" class="btn btn-site-outline btn-sm select-room-btn" data-room-id="{{ $room->id }}">Select</button>
                         </div>
                     </div>
@@ -111,7 +112,8 @@
             <div class="site-booking-panel" id="bookingPanel"
                  data-calculate-url="{{ route('bookings.calculate-price') }}"
                  data-property-slug="{{ $property->slug }}">
-                <div class="site-price mb-3">₹{{ number_format($property->price_per_night, 0) }} <small>from / night</small></div>
+                <div class="site-price mb-1" id="panelPriceHint">₹{{ number_format($fromPrice, 0) }} <small>from / night (couple)</small></div>
+                <p class="small text-muted mb-3">Full price breakdown below — no hidden charges</p>
 
                 <input type="hidden" id="room_id" value="{{ $activeRooms->first()?->id }}">
 
@@ -137,6 +139,12 @@
                     <select id="child_count" class="form-select">
                         @foreach(range(0, 4) as $i)<option value="{{ $i }}">{{ $i }}</option>@endforeach
                     </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Facilities &amp; add-ons</label>
+                    <div id="addonOptionsWrap" class="border rounded p-2 bg-white small">
+                        <p class="text-muted mb-0">Select a room to see facilities…</p>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Promo code</label>
@@ -175,7 +183,8 @@ document.querySelectorAll('.select-room-btn').forEach(btn => {
     });
 });
 document.getElementById('guest_package')?.addEventListener('change', function() {
-    document.getElementById('childCountWrap').style.display = this.value === 'family' ? '' : 'none';
+    const wrap = document.getElementById('childCountWrap');
+    wrap.style.display = (this.value === 'family' || this.value === 'child') ? '' : 'none';
 });
 @auth('customer')
 document.getElementById('bookNowBtn')?.addEventListener('click', function(e) {
@@ -187,6 +196,11 @@ document.getElementById('bookNowBtn')?.addEventListener('click', function(e) {
         guest_package: document.getElementById('guest_package').value,
         child_count: document.getElementById('child_count').value,
     });
+    if (document.getElementById('full_package_addons')?.checked) {
+        params.set('full_package_addons', '1');
+    } else {
+        document.querySelectorAll('.addon-checkbox:checked').forEach(cb => params.append('addon_ids[]', cb.value));
+    }
     window.location = '{{ route('bookings.create', $property) }}?' + params.toString();
 });
 @endauth

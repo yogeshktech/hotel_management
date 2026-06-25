@@ -14,7 +14,8 @@ class Booking extends Model
     protected $fillable = [
         'homestay_id', 'customer_id', 'room_id', 'booking_channel', 'guest_package',
         'adults_count', 'children_count', 'check_in', 'check_out', 'guests',
-        'total_price', 'base_price', 'cleaning_fee', 'service_fee', 'currency',
+        'total_price', 'base_price', 'addons_total', 'full_package_addons', 'addons_snapshot',
+        'cleaning_fee', 'service_fee', 'currency',
         'payment_method', 'payment_status', 'status', 'guest_notes', 'promo_code',
         'promo_discount', 'booked_at', 'checked_in_at', 'checked_out_at',
         'vacant_from', 'created_by_staff_id', 'booking_reference',
@@ -29,6 +30,9 @@ class Booking extends Model
             'booked_at' => 'datetime',
             'checked_in_at' => 'datetime',
             'checked_out_at' => 'datetime',
+            'full_package_addons' => 'boolean',
+            'addons_snapshot' => 'array',
+            'addons_total' => 'decimal:2',
         ];
     }
 

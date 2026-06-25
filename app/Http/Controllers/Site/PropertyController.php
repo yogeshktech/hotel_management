@@ -36,7 +36,7 @@ class PropertyController extends Controller
             abort(404);
         }
 
-        $property->load(['location', 'images', 'rooms.pricings', 'rooms.images']);
+        $property->load(['location', 'images', 'rooms.pricings', 'rooms.addons', 'rooms.images']);
         $property->loadAvg('reviews', 'overall_rating');
         $property->increment('view_count');
 

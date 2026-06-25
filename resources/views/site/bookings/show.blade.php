@@ -37,8 +37,34 @@
                         <strong>{{ ucfirst($booking->guest_package) }} ({{ $booking->guests }} guests)</strong>
                     </div>
                     <div class="col-sm-6">
-                        <small class="text-muted d-block">Total paid</small>
+                        <small class="text-muted d-block">Total payable</small>
                         <strong class="site-price">₹{{ number_format($booking->total_price, 0) }}</strong>
+                    </div>
+                    <div class="col-12">
+                        <small class="text-muted d-block mb-2">Price breakdown</small>
+                        <ul class="list-unstyled small mb-0 border rounded p-3 bg-light">
+                            <li class="d-flex justify-content-between"><span>Room stay</span><span>₹{{ number_format($booking->base_price, 0) }}</span></li>
+                            @if($booking->addons_snapshot)
+                                @foreach($booking->addons_snapshot as $addon)
+                                <li class="d-flex justify-content-between">
+                                    <span>{{ $addon['name'] }} <span class="text-muted">({{ $addon['detail'] ?? '' }})</span></span>
+                                    <span>{{ ($addon['total'] ?? 0) > 0 ? '₹'.number_format($addon['total'], 0) : 'Free' }}</span>
+                                </li>
+                                @endforeach
+                            @elseif($booking->addons_total > 0)
+                                <li class="d-flex justify-content-between"><span>Add-ons</span><span>₹{{ number_format($booking->addons_total, 0) }}</span></li>
+                            @endif
+                            @if($booking->cleaning_fee > 0)
+                                <li class="d-flex justify-content-between"><span>Cleaning fee</span><span>₹{{ number_format($booking->cleaning_fee, 0) }}</span></li>
+                            @endif
+                            @if($booking->service_fee > 0)
+                                <li class="d-flex justify-content-between"><span>Service fee</span><span>₹{{ number_format($booking->service_fee, 0) }}</span></li>
+                            @endif
+                            @if($booking->promo_discount > 0)
+                                <li class="d-flex justify-content-between text-success"><span>Promo ({{ $booking->promo_code }})</span><span>-₹{{ number_format($booking->promo_discount, 0) }}</span></li>
+                            @endif
+                            <li class="d-flex justify-content-between fw-bold border-top pt-2 mt-2"><span>Total</span><span>₹{{ number_format($booking->total_price, 0) }}</span></li>
+                        </ul>
                     </div>
                     <div class="col-12">
                         <small class="text-muted d-block">Payment</small>

@@ -35,9 +35,12 @@ class BookingController extends ApiController
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
             'promo_code' => 'nullable|string',
+            'addon_ids' => 'nullable|array',
+            'addon_ids.*' => 'integer|exists:room_addons,id',
+            'full_package_addons' => 'nullable|boolean',
         ]);
 
-        $room = Room::with('homestay')->findOrFail($validated['room_id']);
+        $room = Room::with(['homestay', 'addons'])->findOrFail($validated['room_id']);
         $childCount = (int) ($validated['child_count'] ?? 0);
 
         try {
@@ -46,7 +49,9 @@ class BookingController extends ApiController
                 $validated['guest_package'],
                 $childCount,
                 Carbon::parse($validated['check_in']),
-                Carbon::parse($validated['check_out'])
+                Carbon::parse($validated['check_out']),
+                array_map('intval', $validated['addon_ids'] ?? []),
+                $request->boolean('full_package_addons'),
             );
         } catch (\InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 422);
@@ -133,10 +138,14 @@ class BookingController extends ApiController
             'promo_code' => 'nullable|string',
             'guest_notes' => 'nullable|string|max:500',
             'payment_method' => 'nullable|string',
+            'addon_ids' => 'nullable|array',
+            'addon_ids.*' => 'integer|exists:room_addons,id',
+            'full_package_addons' => 'nullable|boolean',
         ]);
 
-        $room = Room::with('homestay')->findOrFail($validated['room_id']);
+        $room = Room::with(['homestay', 'addons'])->findOrFail($validated['room_id']);
         $childCount = (int) ($validated['child_count'] ?? 0);
+        $fullPackage = $request->boolean('full_package_addons');
 
         if ($room->homestay->status !== 'active') {
             return $this->error('Property not available', 422);
@@ -152,7 +161,9 @@ class BookingController extends ApiController
                 $validated['guest_package'],
                 $childCount,
                 Carbon::parse($validated['check_in']),
-                Carbon::parse($validated['check_out'])
+                Carbon::parse($validated['check_out']),
+                array_map('intval', $validated['addon_ids'] ?? []),
+                $fullPackage,
             );
         } catch (\InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 422);
@@ -171,7 +182,7 @@ class BookingController extends ApiController
 
         $total = max(0, $pricing['total_price'] - $promoDiscount);
 
-        $booking = DB::transaction(function () use ($request, $room, $validated, $pricing, $promoDiscount, $promoCode, $total, $childCount) {
+        $booking = DB::transaction(function () use ($request, $room, $validated, $pricing, $promoDiscount, $promoCode, $total, $fullPackage) {
             return Booking::create([
                 'homestay_id' => $room->homestay_id,
                 'customer_id' => $request->user()->id,
@@ -180,10 +191,13 @@ class BookingController extends ApiController
                 'guest_package' => $validated['guest_package'],
                 'adults_count' => $pricing['adults_count'],
                 'children_count' => $pricing['children_count'],
-                'guests' => $pricing['adults_count'] + $pricing['children_count'],
+                'guests' => $pricing['guests'],
                 'check_in' => $validated['check_in'],
                 'check_out' => $validated['check_out'],
                 'base_price' => $pricing['base_price'],
+                'addons_total' => $pricing['addons_total'],
+                'full_package_addons' => $fullPackage,
+                'addons_snapshot' => $pricing['addons_snapshot'],
                 'cleaning_fee' => $pricing['cleaning_fee'],
                 'service_fee' => $pricing['service_fee'],
                 'promo_discount' => $promoDiscount,
