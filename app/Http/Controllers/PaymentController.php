@@ -6,6 +6,7 @@ use App\Models\Booking;
 use Exception;
 use Illuminate\Http\Request;
 use Razorpay\Api\Api;
+use Razorpay\Api\Errors\BadRequestError;
 
 class PaymentController extends Controller
 {
@@ -20,12 +21,27 @@ class PaymentController extends Controller
                 ->with('info', 'This booking is already paid.');
         }
 
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-        $order = $api->order->create([
-            'receipt' => $booking->booking_reference,
-            'amount' => (int) round($booking->total_price * 100),
-            'currency' => 'INR',
-        ]);
+        $key = config('services.razorpay.key');
+        $secret = config('services.razorpay.secret');
+
+        if (blank($key) || blank($secret)) {
+            return redirect()->route('bookings.show', $booking)
+                ->with('error', 'Payment gateway is not configured. Please contact support.');
+        }
+
+        try {
+            $api = new Api($key, $secret);
+            $order = $api->order->create([
+                'receipt' => $booking->booking_reference,
+                'amount' => (int) round($booking->total_price * 100),
+                'currency' => config('services.razorpay.currency', 'INR'),
+            ]);
+        } catch (BadRequestError $e) {
+            report($e);
+
+            return redirect()->route('bookings.show', $booking)
+                ->with('error', 'Unable to start payment. Please verify Razorpay API keys in .env and try again.');
+        }
 
         return view('payments.razorpay', compact('order', 'booking'));
     }
